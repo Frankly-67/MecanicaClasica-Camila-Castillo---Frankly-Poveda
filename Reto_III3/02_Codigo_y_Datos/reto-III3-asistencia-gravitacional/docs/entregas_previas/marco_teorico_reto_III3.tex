@@ -1,0 +1,279 @@
+% Compilar con XeLaTeX o LuaLaTeX (en Overleaf: Menú > Compilador).
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[spanish]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setmainlanguage{spanish}
+\fi
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,angles,quotes}
+\usepackage[font=small]{caption}
+
+\pagestyle{empty}
+
+\title{Reto III.3: asistencia gravitacional en Júpiter\\ Introducción, objetivos y marco teórico}
+\author{Frankly Giovanni Poveda Pinzón \and Camila Castillo López}
+\date{2 de octubre de 2026}
+
+\setlength{\emergencystretch}{3em}
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{Introducción}
+
+Llevar una sonda a los planetas exteriores exige mucha energía. Una transferencia de
+Hohmann directa de la Tierra a Saturno tarda unos seis años, y acortar ese tiempo con
+propulsión requiere más combustible del que un lanzador puede poner en órbita. La solución
+que se usa desde los años setenta es el sobrevuelo planetario o asistencia gravitacional:
+la sonda pasa cerca de un planeta y sale con una velocidad distinta, en magnitud y
+dirección, respecto al Sol, sin gastar combustible. Las sondas Voyager aprovecharon en 1977
+una alineación de Júpiter y Saturno para llegar a Saturno en cuatro años o menos
+\cite{kohlhase1977}.
+
+El fenómeno parece violar la conservación de la energía, pues la sonda sale de Júpiter con
+más rapidez de la que traía. La explicación está en el sistema de referencia: respecto a
+Júpiter la rapidez de llegada y de salida son iguales, pero Júpiter se mueve respecto al Sol,
+y al sumar su velocidad la rapidez heliocéntrica de la sonda sí cambia. Entender qué se
+conserva y dónde es justamente el tema de este trabajo.
+
+El problema completo es de varios cuerpos y no tiene solución analítica. En el diseño de
+misiones se usa la aproximación de cónicas empalmadas, que divide la trayectoria en tramos
+donde actúa un solo cuerpo y en cada uno resuelve un problema de Kepler. La aproximación es
+útil porque las escalas del problema están muy separadas, pero no es exacta. En este trabajo
+se diseñará un sobrevuelo de Júpiter que lleve una sonda hasta Saturno, se resolverá con
+cónicas empalmadas y con integración numérica de $N$ cuerpos, y se comparará el resultado de
+ambos métodos para saber en qué condiciones dejan de coincidir.
+
+\section{Objetivos}
+
+\subsection*{Objetivo general}
+
+Diseñar una asistencia gravitacional en Júpiter que lleve una sonda hasta Saturno y
+determinar, comparando la aproximación de cónicas empalmadas con la integración de $N$
+cuerpos, qué cantidades se conservan en cada sistema de referencia y cuál es el error de la
+aproximación.
+
+\subsection*{Objetivos específicos}
+
+\begin{enumerate}
+\item Plantear el problema en los sistemas de referencia heliocéntrico, jovicéntrico y
+rotante Sol--Júpiter, e identificar las cantidades conservadas en cada uno.
+\item Construir un modelo de cónicas empalmadas (problema de Lambert más hipérbola de
+sobrevuelo) y encontrar con él una trayectoria Tierra--Júpiter--Saturno sin propulsión
+durante el encuentro.
+\item Integrar numéricamente el mismo encuentro con un código de $N$ cuerpos y verificar la
+conservación de la energía y de la constante de Jacobi.
+\item Cuantificar la diferencia entre ambos modelos en función de la velocidad de llegada y
+del radio de empalme.
+\item Comparar los resultados con la trayectoria real de Voyager~2.
+\end{enumerate}
+
+\section{Marco teórico}
+
+\subsection{Problema de dos cuerpos}
+
+Dos masas que interactúan gravitacionalmente se reducen a un solo cuerpo de masa reducida
+que se mueve en el potencial $-\mu/r$, con $\mu = G(m_1+m_2)$. Como la fuerza es central se
+conservan el momento angular específico $\vec h = \vec r\times\vec v$, lo que confina el
+movimiento a un plano, y la energía específica
+\begin{equation}
+\varepsilon = \frac{v^2}{2} - \frac{\mu}{r}.
+\end{equation}
+La trayectoria es una cónica con el centro de fuerza en uno de sus focos,
+\begin{equation}
+r(f) = \frac{h^2/\mu}{1 + e\cos f},
+\end{equation}
+donde $f$ es la anomalía verdadera y $e$ la excentricidad. El signo de la energía define el
+tipo de órbita: elipse si $\varepsilon<0$, parábola si $\varepsilon=0$ e hipérbola si
+$\varepsilon>0$. Con el semieje mayor $a = -\mu/2\varepsilon$ la conservación de la energía
+toma la forma de la ecuación de vis-viva,
+\begin{equation}
+v^2 = \mu\left(\frac{2}{r} - \frac{1}{a}\right),
+\end{equation}
+válida para las tres cónicas si en la hipérbola se toma $a<0$ \cite{curtis2020}.
+
+\subsection{Transferencias y problema de Lambert}
+
+La transferencia más económica entre dos órbitas circulares coplanares es la de Hohmann: una
+semielipse tangente a ambas. Entre la Tierra y Júpiter su semieje es $a_t = (r_\oplus +
+r_J)/2$ y el viaje dura medio periodo, unos 2.7 años. Para un diseño real se necesita algo
+más general, porque los planetas deben estar en el lugar correcto en el momento de llegada.
+Ese es el problema de Lambert: dadas dos posiciones $\vec r_1$ y $\vec r_2$ y un tiempo de
+vuelo $\Delta t$, encontrar la órbita que las une. El teorema de Lambert establece que
+$\Delta t$ depende solo del semieje mayor, de la suma $r_1+r_2$ y de la cuerda
+$c=|\vec r_2-\vec r_1|$, y el problema se resuelve numéricamente, por ejemplo con la
+formulación de variable universal \cite{curtis2020}.
+
+\subsection{La hipérbola de sobrevuelo}
+
+Cerca de Júpiter, y si se ignora al Sol, la sonda está en un problema de dos cuerpos con
+$\varepsilon>0$, así que describe una hipérbola. Lejos del planeta su rapidez tiende a un
+valor $v_\infty$, con $\varepsilon = v_\infty^2/2$. Como la energía se conserva, la rapidez
+$v_\infty$ es la misma a la entrada y a la salida; el encuentro solo cambia la dirección
+de la velocidad.
+
+Las asíntotas corresponden a $1+e\cos f_\infty=0$, es decir $\cos f_\infty = -1/e$. El
+ángulo que gira la velocidad entre la entrada y la salida es $\delta = 2f_\infty - \pi$, de
+donde
+\begin{equation}
+\sin\frac{\delta}{2} = \frac{1}{e}.
+\end{equation}
+Evaluando la vis-viva en el periapsis $r_p$ se obtiene la excentricidad en términos de las
+cantidades que se pueden escoger en el diseño,
+\begin{equation}
+e = 1 + \frac{r_p v_\infty^2}{\mu_J}.
+\end{equation}
+Un paso más cercano ($r_p$ pequeño) o más lento ($v_\infty$ pequeño) produce un giro mayor.
+El cambio vectorial de velocidad tiene magnitud $|\Delta\vec v| = 2v_\infty\sin(\delta/2)$.
+La figura~\ref{fig:esquema}a muestra esta geometría.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=0.62, >=Stealth]
+  % (a) hipérbola con foco en Júpiter, e = 1.5, r_p = 1
+  \draw[thick] plot[domain=-112:112, samples=120, smooth]
+     ({2.5/(1+1.5*cos(\x))*cos(\x)}, {2.5/(1+1.5*cos(\x))*sin(\x)});
+  \fill (0,0) circle (3pt) node[below left] {J};
+  \draw[dashed] (0,0) -- node[below] {$r_p$} (1,0);
+  % asíntotas por el centro (3,0)
+  \draw[gray, thin] (3,0) -- ++({-0.667*7.5},{0.745*7.5});
+  \draw[gray, thin] (3,0) -- ++({-0.667*7.5},{-0.745*7.5});
+  \draw[gray, thin, dotted] (3,0) -- ++({0.667*2.4},{0.745*2.4});
+  \coordinate (C) at (3,0);
+  \coordinate (A) at ({3+0.667},{0.745});
+  \coordinate (B) at ({3-0.667},{0.745});
+  \pic[draw, "$\delta$", angle radius=0.9cm, angle eccentricity=1.4] {angle = A--C--B};
+  % sentido de movimiento
+  \draw[->, thick] (-1.0,-4.2) -- ++(0.32,0.36) node[right] {$\vec v_{\infty,\mathrm{ent}}$};
+  \draw[->, thick] (-1.2,4.4) -- ++(-0.4,0.45) node[left] {$\vec v_{\infty,\mathrm{sal}}$};
+  \node at (-3.5,5.6) {(a)};
+
+  % (b) triángulo de velocidades
+  \begin{scope}[xshift=7.5cm, yshift=1cm]
+    \coordinate (O) at (0,0);
+    \coordinate (J) at (5,0);
+    \coordinate (I) at ({5+2.6*cos(-130)},{2.6*sin(-130)});
+    \coordinate (S) at ({5+2.6*cos(-46.4)},{2.6*sin(-46.4)});
+    \draw[gray, dashed] (J) circle (2.6);
+    \draw[->, very thick] (O) -- node[above] {$\vec v_J$} (J);
+    \draw[->] (J) -- node[left, xshift=-2pt] {$\vec v_{\infty,\mathrm{ent}}$} (I);
+    \draw[->] (J) -- node[right] {$\vec v_{\infty,\mathrm{sal}}$} (S);
+    \draw[->, thick, dashed] (O) -- node[below left] {$\vec v_{\mathrm{antes}}$} (I);
+    \draw[->, thick] (O) -- node[below, sloped] {$\vec v_{\mathrm{después}}$} (S);
+    \fill (O) circle (2pt) node[left] {Sol};
+    \node at (0,4.6) {(b)};
+  \end{scope}
+\end{tikzpicture}
+\caption{(a) Trayectoria hiperbólica alrededor de Júpiter (J) en su propio sistema de
+referencia. Las líneas grises son las asíntotas y $\delta$ el ángulo que gira la velocidad.
+(b) Suma de velocidades vista desde el Sol. Como $|\vec v_\infty|$ no cambia, la velocidad de
+salida termina sobre el círculo punteado; si $\vec v_\infty$ gira hacia $\vec v_J$, la
+rapidez heliocéntrica aumenta.}
+\label{fig:esquema}
+\end{figure}
+
+\subsection{Cambio de sistema de referencia}
+
+En el sistema del Sol la velocidad de la sonda es $\vec v = \vec v_J + \vec v_\infty$. Si
+durante el encuentro la velocidad de Júpiter no cambia apreciablemente, el cambio en la
+energía heliocéntrica de la sonda es
+\begin{equation}
+\Delta\varepsilon_\odot = \tfrac12|\vec v_J+\vec v_{\infty,\mathrm{sal}}|^2
+                       - \tfrac12|\vec v_J+\vec v_{\infty,\mathrm{ent}}|^2
+                       = \vec v_J\cdot\left(\vec v_{\infty,\mathrm{sal}}
+                         - \vec v_{\infty,\mathrm{ent}}\right),
+\end{equation}
+donde se usó que $|\vec v_{\infty,\mathrm{sal}}| = |\vec v_{\infty,\mathrm{ent}}|$. La sonda
+gana energía cuando el giro acerca $\vec v_\infty$ a la dirección de movimiento de Júpiter,
+lo que ocurre si pasa por detrás del planeta, y la pierde en el caso contrario. La energía
+ganada sale de la órbita de Júpiter; como la razón de masas es del orden de $10^{-25}$, el
+cambio en Júpiter es imperceptible. En el sistema heliocéntrico, entonces, ni la energía
+ni el momento angular de la sonda se conservan, aunque sí los del sistema completo.
+
+\subsection{Esfera de influencia y cónicas empalmadas}
+
+Para decidir dónde cambiar del sistema del Sol al de Júpiter se usa la esfera de influencia.
+Laplace la definió comparando, en cada sistema de referencia, la perturbación del tercer
+cuerpo con la atracción del cuerpo principal: dentro de la esfera la perturbación del Sol
+sobre el movimiento relativo a Júpiter es menor, en proporción, que la de Júpiter sobre el
+movimiento relativo al Sol. El resultado es
+\begin{equation}
+r_{\mathrm{SOI}} = a_J\left(\frac{m_J}{M_\odot}\right)^{2/5},
+\end{equation}
+que para Júpiter vale unos $4.8\times10^7$~km \cite{murray1999}. El método de cónicas
+empalmadas resuelve un problema de Kepler heliocéntrico fuera de la esfera y uno jovicéntrico
+dentro de ella, igualando posición y velocidad en la frontera. Visto desde el Sol, como la
+esfera es pequeña frente a la órbita, el encuentro se puede tratar como instantáneo.
+
+El criterio no dice que la atracción del Sol sea pequeña dentro de la esfera, sino que su
+efecto diferencial, la diferencia entre lo que el Sol acelera a la sonda y a Júpiter, lo es.
+Por eso la aproximación debería empeorar cuando la sonda pasa mucho tiempo cerca de la
+frontera.
+
+\subsection{Problema restringido de tres cuerpos}
+
+Si Júpiter describe un círculo alrededor del centro de masa y la sonda no perturba a ninguno
+de los dos cuerpos, se tiene el problema restringido circular de tres cuerpos. En un sistema
+que rota con velocidad angular $n$ junto con Júpiter, las ecuaciones de movimiento de la sonda
+son
+\begin{equation}
+\ddot x - 2n\dot y = \frac{\partial U}{\partial x}, \qquad
+\ddot y + 2n\dot x = \frac{\partial U}{\partial y}, \qquad
+U = \frac{n^2}{2}(x^2+y^2) + \frac{\mu_1}{r_1} + \frac{\mu_2}{r_2},
+\end{equation}
+con $r_1$ y $r_2$ las distancias al Sol y a Júpiter. El potencial no depende del tiempo en
+este sistema, y multiplicando por $\dot x$ y $\dot y$ y sumando se obtiene una integral de
+movimiento, la constante de Jacobi
+\begin{equation}
+C_J = 2U - (\dot x^2 + \dot y^2).
+\end{equation}
+Lejos de Júpiter, $C_J$ se puede escribir en términos de los elementos orbitales
+heliocéntricos de la sonda, lo que da el parámetro de Tisserand
+\begin{equation}
+T_J = \frac{a_J}{a} + 2\cos i\,\sqrt{\frac{a}{a_J}\left(1-e^2\right)} ,
+\end{equation}
+que debe ser aproximadamente el mismo antes y después del encuentro \cite{murray1999}. Esta
+relación limita qué órbitas se pueden alcanzar con un sobrevuelo y sirve como prueba de
+consistencia de cualquier cálculo.
+
+\subsection{Integración numérica de $N$ cuerpos}
+
+Sin las aproximaciones anteriores, la aceleración de cada cuerpo es la suma de las
+atracciones de todos los demás,
+\begin{equation}
+\ddot{\vec r}_i = -\sum_{j\neq i} G m_j\,\frac{\vec r_i - \vec r_j}{|\vec r_i - \vec r_j|^3},
+\end{equation}
+y las ecuaciones se integran numéricamente. La dificultad es que durante el encuentro las
+escalas de tiempo cambian en varios órdenes de magnitud: horas cerca del periapsis y años en
+el crucero. Se necesitan integradores de paso adaptativo, como IAS15, incluido en el código
+REBOUND, que ajusta el paso para mantener el error por debajo de la precisión de máquina
+\cite{rein2012,rein2015}. Como no existe solución exacta para comparar, la calidad de la
+integración se juzga por la conservación de la energía total, del momento angular total y,
+en el problema restringido, de la constante de Jacobi.
+
+\begin{thebibliography}{9}
+\bibitem{kohlhase1977} C.~E. Kohlhase y P.~A. Penzo. Voyager mission description.
+\emph{Space Science Reviews} 21, 77--101 (1977).
+\bibitem{curtis2020} H.~D. Curtis. \emph{Orbital Mechanics for Engineering Students}.
+Butterworth-Heinemann, 4.\textsuperscript{a} ed., 2020.
+\bibitem{murray1999} C.~D. Murray y S.~F. Dermott. \emph{Solar System Dynamics}.
+Cambridge University Press, 1999.
+\bibitem{rein2012} H.~Rein y S.-F. Liu. REBOUND: an open-source multi-purpose $N$-body code
+for collisional dynamics. \emph{Astronomy \& Astrophysics} 537, A128 (2012).
+\bibitem{rein2015} H.~Rein y D.~S. Spiegel. IAS15: a fast, adaptive, high-order integrator
+for gravitational dynamics. \emph{Monthly Notices of the Royal Astronomical Society} 446,
+1424--1437 (2015).
+\end{thebibliography}
+
+\end{document}

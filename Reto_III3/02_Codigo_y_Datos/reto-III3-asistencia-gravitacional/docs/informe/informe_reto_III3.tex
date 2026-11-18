@@ -1,0 +1,440 @@
+% Informe técnico del Reto III.3. Compilar con XeLaTeX o LuaLaTeX (Overleaf: Menú > Compilador).
+% Las figuras están en la carpeta figuras/ (se generan con: python reproducir.py --reporte).
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[spanish]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setmainlanguage{spanish}
+\fi
+
+\usepackage[margin=2.3cm,headheight=15pt]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{siunitx}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+
+\newcommand{\RJ}{R_{\mathrm J}}
+\newcommand{\vinf}{v_\infty}
+\newcommand{\rsoi}{r_{\mathrm{SOI}}}
+
+\definecolor{enlace}{RGB}{0,70,160}
+\newcommand{\vlink}[2]{\href{https://drive.google.com/file/d/#1/view?usp=sharing}{\textcolor{enlace}{\underline{#2}}}}
+\newcommand{\video}[2]{\par\nopagebreak\smallskip\noindent\hfill{\small $\triangleright$ Video de referencia: \vlink{#1}{#2}}\par\smallskip}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{Asistencia gravitacional en Júpiter}
+\fancyhead[R]{\small noviembre de 2026}
+\fancyfoot[C]{\small Universidad Industrial de Santander}
+\fancyfoot[R]{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\title{Diseño de una asistencia gravitacional en Júpiter:\\
+cónicas empalmadas frente a integración de $N$ cuerpos}
+\author{Frankly Giovanni Poveda Pinzón
+\quad\quad Camila Castillo López\\[4pt]
+Universidad Industrial de Santander\\
+Escuela de Física, Bucaramanga, Colombia}
+\date{18 de noviembre de 2026}
+
+\begin{document}
+\renewcommand{\contentsname}{Índice}
+\maketitle
+\thispagestyle{fancy}
+
+
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+\begin{abstract}
+Se diseñó un sobrevuelo de Júpiter hacia Saturno con dos modelos: cónicas empalmadas e
+integración de $N$ cuerpos. A partir del lagrangiano en el sistema que rota con Júpiter se
+muestra que la energía y el momento angular de la sonda respecto al Sol no se conservan por
+separado, pero sí $h = E - n\ell_z$, de donde $\Delta E = n\,\Delta\ell_z$; en el sistema de
+Júpiter se conservan, aproximadamente, su energía y su momento angular, y con ellos $\vinf$. Con
+efemérides reales JPL DE421, las cónicas encuentran la ventana de 1977 y predicen el periapsis
+de las Voyager con error menor al $4\,\%$. Su error en la ganancia de energía es menor al
+$2\,\%$ para $\vinf \gtrsim 8$~km/s y supera el $10\,\%$ para $\vinf \lesssim 3$~km/s. Al
+integrar Voyager~2 desde su estado real, el modelo de $N$ cuerpos solo reproduce la trayectoria
+si se incluyen los satélites galileanos, el achatamiento de Júpiter y una maniobra de la sonda
+de 76 minutos, detectada con la aceleración residual.
+\end{abstract}
+
+
+
+\section{Introducción}
+
+Para llegar a los planetas exteriores se necesita mucha energía. Una transferencia de Hohmann
+directa a Saturno tarda unos seis años. La alternativa, propuesta en los años sesenta
+\cite{flandro1966}, es el sobrevuelo planetario o asistencia gravitacional: la sonda pasa cerca
+de un planeta y sale con otra velocidad respecto al Sol sin gastar combustible. En 1977 una
+alineación favorable permitió que las dos sondas Voyager usaran a Júpiter para llegar a
+Saturno en tres a cuatro años \cite{kohlhase1977}.
+
+El fenómeno parece contradecir la conservación de la energía, porque la sonda sale de Júpiter
+más rápido de lo que llegó. La contradicción se resuelve al especificar el sistema de
+referencia, y esa es la primera parte de la pregunta del reto: \emph{qué cantidad debe
+conservarse durante el encuentro en cada sistema de referencia}. La segunda parte es
+cuantitativa: \emph{cuál es el error de la aproximación de cónicas empalmadas}, el método que
+divide la trayectoria en tramos donde actúa un solo cuerpo y que se usa en el diseño
+preliminar de misiones \cite{curtis2020}.
+
+El caso de estudio es el de las Voyager: Voyager~2 pasó a unos $10\,\RJ$ de Júpiter en julio de
+1979 y llegó a Saturno en 1981. Ese encuentro está documentado con efemérides precisas, de modo
+que sirve para medir cuánto se equivoca cada modelo. Se comparan las cónicas empalmadas, que son
+analíticas pero suponen un solo cuerpo en cada tramo, con la integración numérica de los $N$
+cuerpos, que no hace esa suposición.
+
+Este trabajo responde ambas preguntas con mecánica clásica: la sección~\ref{sec:metodo} presenta la formulación, los modelos, los datos y las hipótesis; la~\ref{sec:resultados}, los resultados y sus verificaciones; la~\ref{sec:conclusiones}, lo que es confiable.
+
+\section{Metodología}\label{sec:metodo}
+
+\subsection{Formulación lagrangiana y cantidades conservadas}
+
+Se considera una sonda de masa despreciable atraída por el Sol ($M_1$) y por Júpiter ($M_2$),
+que giran en órbitas circulares alrededor de su centro de masa con velocidad angular $n$,
+$n^2a^3 = G(M_1+M_2)$. En un sistema que rota con Júpiter, con el Sol en $(-\alpha a,0,0)$ y
+Júpiter en $((1-\alpha)a,0,0)$, $\alpha = M_2/(M_1+M_2)$, el lagrangiano por unidad de masa es
+\begin{equation}
+L = \tfrac12\left[(\dot x - ny)^2 + (\dot y + nx)^2 + \dot z^2\right] + \frac{GM_1}{r_1} + \frac{GM_2}{r_2},
+\end{equation}
+donde los paréntesis son las componentes de la velocidad inercial. Las ecuaciones de
+Euler--Lagrange dan $\ddot x - 2n\dot y = \partial_x\Omega$, $\ddot y + 2n\dot x = \partial_y\Omega$,
+$\ddot z = \partial_z\Omega$, con $\Omega = \tfrac12 n^2(x^2+y^2) + GM_1/r_1 + GM_2/r_2$; los
+términos $\pm 2n\dot q$ son la fuerza de Coriolis. Como $L$ no depende explícitamente del
+tiempo, se conserva la función de energía \cite{goldstein2002}
+\begin{equation}
+h = \sum_k \dot q_k\frac{\partial L}{\partial\dot q_k} - L
+  = \tfrac12\left(\dot x^2+\dot y^2+\dot z^2\right) - \Omega = E - n\,\ell_z ,
+\label{eq:jacobi}
+\end{equation}
+donde $E$ y $\ell_z$ son la energía y el momento angular de la sonda medidos en el sistema
+inercial; $C_J = -2h$ es la constante de Jacobi \cite{murray1999}. En el sistema inercial el
+potencial depende del tiempo y no tiene simetría de rotación, así que ni $E$ ni $\ell_z$ se
+conservan; solo lo hace la combinación~\eqref{eq:jacobi}, asociada a la simetría ante una
+traslación temporal acompañada de una rotación $n\Delta t$. De ahí,
+\begin{equation}
+\Delta E = n\,\Delta\ell_z .
+\label{eq:DE}
+\end{equation}
+Esta igualdad exige que la órbita de Júpiter sea circular. Si es excéntrica, $h$ no es
+constante y $dE/dt = \omega(t)\,d\ell_z/dt$ más un término proporcional a la velocidad radial de
+Júpiter, donde $\omega(t)$ es su velocidad angular instantánea. Lejos de Júpiter,
+\eqref{eq:jacobi} se reduce al parámetro de Tisserand
+$T_{\mathrm J} = a/a_s + 2\cos i\sqrt{(a_s/a)(1-e^2)}$, donde $a_s$, $e$, $i$ son los elementos
+heliocéntricos de la sonda.
+
+En el sistema de Júpiter, la ecuación de la posición relativa $\vec\rho$ contiene la atracción
+de Júpiter más una perturbación solar de marea de orden $GM_1\rho/a^3$. Si esta se desprecia, el
+problema es de dos cuerpos: se conservan la energía y el momento angular jovicéntricos, la
+órbita es una hipérbola, $|\vec v_{\infty,\mathrm{ent}}| = |\vec v_{\infty,\mathrm{sal}}|$ y la
+velocidad gira un ángulo $\delta$ dado por
+\begin{equation}
+e = 1 + \frac{r_p\vinf^2}{GM_2}, \qquad \sin\frac{\delta}{2} = \frac1e .
+\label{eq:giro}
+\end{equation}
+Igualando el cociente perturbación/atracción en ambos sistemas se obtiene el radio de la
+esfera de influencia de Laplace, $\rsoi = a(M_2/M_1)^{2/5} = 674\,\RJ$. La deducción completa
+está en el documento de formulación del repositorio, verificada con álgebra simbólica (sympy).
+
+\subsection{Modelo 1: cónicas empalmadas}
+
+Los tramos Tierra--Júpiter y Júpiter--Saturno se obtienen resolviendo el problema de Lambert
+con variable universal \cite{curtis2020}; el encuentro se trata como instantáneo visto desde el
+Sol. Para cada fecha de salida y tiempos de vuelo se calcula el $\vec v_\infty$ de llegada y el
+que exige el segundo tramo. El sobrevuelo es posible sin motor si sus magnitudes coinciden y si
+el periapsis que da~\eqref{eq:giro} supera $2\,\RJ$. Se barrieron $4.2\times10^6$ combinaciones
+entre 1976 y 1980 y las mejores se refinaron con optimización con restricciones (SLSQP),
+minimizando el tiempo de viaje para un límite de la energía de lanzamiento $C_3$.
+
+\subsection{Modelo 2: integración de $N$ cuerpos}
+
+Se integraron las ecuaciones de Newton con REBOUND y el integrador de paso adaptativo IAS15
+\cite{rein2012,rein2015}. Para medir el error de las cónicas se usó el problema restringido
+circular (Sol, Júpiter en órbita circular y sonda), en el cual \eqref{eq:jacobi} es exacta y
+sirve de control. Ambos modelos parten del \emph{mismo estado en el periapsis} y se propagan
+hacia atrás y hacia adelante hasta que la sonda está a más de $3\,\rsoi$ de Júpiter. En el
+Modelo 1 la sonda sigue la hipérbola hasta el radio de empalme $R_e$ y después una cónica
+heliocéntrica. Como medida del error se tomó la diferencia relativa en la ganancia de energía
+heliocéntrica $\Delta E$, que es la cantidad física que produce el sobrevuelo. Se barrieron
+$\vinf$ entre 2.5 y 15~km/s, $R_e$ entre $0.25$ y $3\,\rsoi$ y $r_p = 3$, 10 y $30\,\RJ$.
+
+Para comparar con Voyager~2 se usaron dos versiones. La básica tiene al Sol, a Júpiter como
+masa puntual y a Saturno. En la ampliada Júpiter se separa en el planeta, con su achatamiento
+$J_2$, y los cuatro satélites galileanos; las posiciones de todos los cuerpos se toman de las
+efemérides y solo se integra la sonda (DOP853, tolerancia relativa $10^{-12}$).
+
+\subsection{Datos reales}
+
+Todos los datos son públicos y no se ajustaron en este trabajo. El cuadro~\ref{tab:datos} dice de dónde sale cada uno; \texttt{datos/LEEME.md} del repositorio da el procedimiento y las comprobaciones. El kernel de Voyager~2 se validó con valores publicados \cite{pds}: máximo acercamiento a Júpiter el 9 de julio de 1979 a las 22:29:01~UTC, a 721\,673~km (publicado: 721\,670~km), y distancias a los cuatro satélites galileanos al $0.2\,\%$ o mejor (Ganímedes: 62\,078 frente a 62\,130~km).
+
+\begin{table}[ht]\centering\footnotesize\renewcommand{\arraystretch}{1.05}
+\caption{Origen de los datos.}\label{tab:datos}
+\begin{tabular}{>{\raggedright\arraybackslash}p{4.1cm}>{\raggedright\arraybackslash}p{7.3cm}>{\raggedright\arraybackslash}p{3.1cm}}
+\toprule
+Dato & Fuente & Uso\\\midrule
+Efemérides de Sol, Tierra, Júpiter y Saturno; $GM$ de Sol, Júpiter y Saturno & JPL DE421 \cite{folkner2009} (paquete \texttt{de421}, leído con \texttt{jplephem}) & Ambos modelos\\
+Radio (71\,492~km) y polo de Júpiter & Unión Astronómica Internacional \cite{archinal2018} & $r_p$ en $R_J$; $J_2$\\
+$GM$ de los satélites galileanos y $J_2$ de Júpiter & Solución JUP230 del JPL \cite{jacobson} & Modelo 2 ampliado\\
+Posiciones de los satélites galileanos & Astronomy Engine 2.1.19 \cite{cross} & Modelo 2 ampliado\\
+Trayectoria de Voyager~2, 4 jun--20 jul 1979 & Kernel SPICE \texttt{vgr2\_jup230.bsp} de NAIF \cite{acton1996}, copia idéntica del paquete \texttt{asteRisk} & Solo validación\\
+Fechas y distancias publicadas & PDS Ring-Moon Systems Node \cite{pds} & Comparación\\
+Maniobra de Voyager~2 (76 min) & NASA SP-439, cap.~7 \cite{morrison1980} & Contraste\\
+Órbitas circulares (alternativa) & Elementos medios de Standish \cite{standish} & Cuadros 1 y 2\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Hipótesis y verificación}
+
+El cuadro~\ref{tab:hip} resume las decisiones de modelado más importantes; la hoja completa,
+con doce hipótesis y cinco decisiones numéricas, está en el repositorio. Antes de simular se registraron tres predicciones:
+el giro máximo con $r_p \geq 2\,\RJ$ y $\vinf\approx 8$~km/s sería de unos \ang{138}, la sonda
+ganaría energía si pasa por detrás de Júpiter, y el error de las cónicas crecería al bajar
+$\vinf$. Cada resultado se verificó por al menos un mecanismo independiente: un segundo integrador (DOP853), invariantes, límites conocidos ($M_2\to0$, $r_p\to\infty$), análisis dimensional y datos no ajustados.
+
+\begin{table}[tb]
+\centering
+\small
+\caption{Hipótesis principales y su efecto medido sobre el resultado.}
+\label{tab:hip}
+\begin{tabular}{>{\raggedright}p{2.6cm}>{\raggedright}p{3.2cm}>{\raggedright}p{2.7cm}>{\raggedright\arraybackslash}p{6.3cm}}
+\toprule
+Decisión & Elegido & Alternativa & Efecto medido \\
+\midrule
+Órbitas planetarias & Efemérides DE421 & Circulares & Error en $r_p$ de Voyager~2: $25\,\%$ (circular) frente a $3.7\,\%$ (DE421) \\
+Radio de empalme & Laplace, $674\,\RJ$ & $0.25$--$3\,\rsoi$, Hill & Con $\vinf=5$ km/s: error de 27\,\% ($0.25\,\rsoi$) a 2.4\,\% ($2\,\rsoi$); 5.7\,\% con Laplace \\
+Duración del encuentro & Instantáneo & Integrado & Error de 17.5\,\% a 0.13\,\% al pasar de $\vinf=2.5$ a 15 km/s \\
+Júpiter & Masa puntual & Planeta con $J_2$ y satélites & Voyager~2 real: error en el periapsis de 1300 km (puntual) frente a 310 km; los satélites cambian $\vinf$ en $-0.03$ km/s \\
+Saturno en el encuentro & Despreciado & Incluido & Cambia $\Delta E$ en $1$--$4\times10^{-4}$ relativo \\
+Sobrevuelo & Sin motor & Con maniobra & Define las fechas factibles. Voyager~2 hizo una de 13 m/s ($0.2\,\%$ de $\vinf$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados y verificación}\label{sec:resultados}
+
+\subsection{Búsqueda de trayectorias y comparación con las Voyager}
+
+Con efemérides reales, las soluciones aparecen en ventanas estrechas, una por año
+(figura~\ref{fig:ventanas}a). Las fechas reales de ambas Voyager caen dentro de la ventana de
+1977 que el modelo encuentra sin haberlas usado (figura~\ref{fig:ventanas}b). Con
+$C_3\leq100$~km$^2$/s$^2$ el viaje más corto sale el 3 de septiembre de 1977, pasa por Júpiter
+el 12 de abril de 1979 con $\vinf = 9.84$~km/s y llega a Saturno el 1 de febrero de 1981
+(3.42 años).
+
+\video{1a6Vb9RsPnKq5cdguYI7ysPRqMSLKdguq}{la misión Tierra--Saturno}
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.78\textwidth]{figuras/fig01_ventanas.png}
+\caption{Ventanas Tierra--Júpiter--Saturno con sobrevuelo sin motor, efemérides DE421. Color:
+tiempo mínimo hasta Saturno con $C_3 \leq 105$~km$^2$/s$^2$; blanco: sin solución; líneas
+grises: $C_3$ de salida. (a) 1976--1980. (b) Ventana de 1977 con las fechas reales de Voyager~2
+(círculo) y Voyager~1 (cuadrado).}
+\label{fig:ventanas}
+\end{figure}
+
+El cuadro~\ref{tab:voy} compara lo que el modelo exige en las fechas reales con lo que
+hicieron las sondas. La hipótesis de órbitas circulares es la de mayor impacto: sin ella, el
+periapsis predicho queda a menos del $4\,\%$ del real. El giro predicho para Voyager~2,
+\ang{96.8}, coincide con el obtenido de los datos (\ang{96.5} entre los extremos del registro,
+\ang{97.6} con la hipérbola osculante en el periapsis), y el desajuste entre las $\vinf$ de
+entrada y salida es de solo $0.10$~km/s: en esas fechas el sobrevuelo se puede hacer
+prácticamente sin propulsión.
+
+\begin{table}[tb]
+\centering
+\small
+\caption{Modelo 1 evaluado en las fechas reales de las Voyager. $r_p$ es la distancia de
+máximo acercamiento requerida para el sobrevuelo sin motor.}
+\label{tab:voy}
+\begin{tabular}{lccccc}
+\toprule
+& $r_p$ circular & $r_p$ DE421 & $r_p$ real & $\delta$ DE421 & $\vinf$ entrada DE421 \\
+\midrule
+Voyager 2 & $12.59\,\RJ$ & $9.72\,\RJ$ & $10.09\,\RJ$ & \ang{96.8} & 7.89 km/s \\
+Voyager 1 & $5.75\,\RJ$ & $4.74\,\RJ$ & $4.88\,\RJ$ & \ang{98.4} & 10.95 km/s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Qué se conserva en cada sistema}
+
+La figura~\ref{fig:sobrevuelo} muestra el encuentro óptimo en los dos sistemas. En el de
+Júpiter, la sonda describe una hipérbola y sale con la misma $\vinf$ con la que entró. En el del
+Sol, el giro de $\vec v_\infty$ hacia la dirección de movimiento de Júpiter aumenta la rapidez
+de 11.6 a 22.2~km/s: la energía heliocéntrica no se conserva.
+
+\video{1A9H1X37hOCKHA-NX3c8qpK5j5CFkZ6PT}{el encuentro visto desde Júpiter y desde el Sol}
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.70\textwidth]{figuras/fig04_sobrevuelo.png}
+\caption{Sobrevuelo óptimo con $C_3\leq100$~km$^2$/s$^2$. (a) Sistema de Júpiter: hipérbola con
+$r_p = 5.96\,\RJ$ y $\delta = \ang{97.9}$. (b) Sistema del Sol: $\vec v = \vec v_{\mathrm J} +
+\vec v_\infty$; la velocidad de salida termina sobre el círculo de radio $\vinf$ porque
+$|\vec v_\infty|$ se conserva.}
+\label{fig:sobrevuelo}
+\end{figure}
+
+La cantidad que sí se conserva es $h$. En el Modelo 2, durante un sobrevuelo de 500 días en el
+que la energía heliocéntrica pasa de $-157$ a $-40$~km$^2$/s$^2$, $h$ varía en
+$2.5\times10^{-14}$ relativo. Con los datos reales de Voyager~2, entre el 4 de junio y el 20 de
+julio de 1979, la energía de la sonda aumenta $\Delta E = 164.2$~km$^2$/s$^2$. Con el movimiento
+medio de Júpiter, $n\Delta\ell_z = 173.2$~km$^2$/s$^2$: la relación~\eqref{eq:DE} falla un
+$5.5\,\%$. La causa es la excentricidad de Júpiter ($0.048$): en julio de 1979 estaba a 5.33~UA
+del Sol, cerca del afelio, y su velocidad angular era $0.952\,n$. Con la velocidad angular
+instantánea, $\int\omega\,d\ell_z = 164.8$~km$^2$/s$^2$ y la diferencia baja al $0.4\,\%$; el
+resto lo explican la velocidad radial de Júpiter y las fuerzas que no están en el potencial
+(sección~\ref{sec:voy}). Por la misma razón el
+parámetro de Tisserand, que se deduce de $h$ con el $n$ medio, tampoco se conserva: prolongando
+la trayectoria con el Modelo 2 hasta más de $3\,\rsoi$ a cada lado, pasa de 2.576 a 2.670
+($3.6\,\%$). Lejos de Júpiter la energía heliocéntrica pasa de $-121.8$ a $+26.3$~km$^2$/s$^2$: la
+sonda queda en una órbita de escape del Sistema Solar, con excentricidad 1.30.
+
+\video{1aP_AyXtxezNrNl6CwevwEhPgkhLemugn}{$E$, $n\ell_z$ y $h$ durante el sobrevuelo}
+\subsection{Verificación del Modelo 2}
+
+Al cambiar la tolerancia de IAS15 entre $10^{-4}$ y $10^{-11}$, la posición final tras 250 días
+cambia como mucho 2.1~m (con $\epsilon = 10^{-4}$; menos de 2~cm con $\epsilon \le 10^{-6}$), y un integrador independiente (DOP853 de SciPy) difiere en 3~m. Cerca del
+periapsis ambos modelos coinciden (límite en que domina Júpiter), y con la masa de Júpiter
+tendiendo a cero la energía heliocéntrica no cambia. Las 40 pruebas automáticas del repositorio
+cubren estos casos.
+
+\subsection{Error de las cónicas empalmadas}
+
+La figura~\ref{fig:error} es el resultado central. Con empalme en la esfera de Laplace y
+$r_p = 10\,\RJ$, el error en la ganancia de energía es de $17.5\,\%$ para $\vinf = 2.5$~km/s,
+$5.7\,\%$ para 5~km/s, $2.0\,\%$ para 8~km/s, $1.0\,\%$ para 10~km/s y $0.13\,\%$ para 15~km/s, y las
+cónicas siempre sobreestiman la ganancia. Esto confirma la tercera predicción: con $\vinf$
+pequeña la sonda pasa más tiempo cerca del borde de la esfera, donde ni el Sol ni Júpiter son
+despreciables. El error también crece al disminuir $r_p$.
+
+\video{1RBG6jed7L2yAaoZgWtrvhcYv0UIYJz84}{el error de las cónicas según $\vinf$}
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/fig07_error_conicas.png}
+\caption{Error relativo de las cónicas en la ganancia de energía heliocéntrica frente al
+modelo de $N$ cuerpos, partiendo del mismo periapsis. (a) Según el radio de empalme, con
+$r_p=10\,\RJ$. (b) Según el periapsis, con empalme en $\rsoi$. Puntos llenos: las cónicas
+sobreestiman la ganancia; vacíos: la subestiman.}
+\label{fig:error}
+\end{figure}
+
+La elección del radio de empalme es un compromiso. Con radios pequeños el modelo ignora a
+Júpiter fuera de la esfera y el error llega al $70\,\%$; con radios grandes ignora al Sol dentro
+de ella, el error cambia de signo para $\vinf$ entre 6 y 7~km/s y la violación de la constante de
+Jacobi por las cónicas crece: hasta $0.07\,\%$ con $0.25\,\rsoi$, $0.4\,\%$ con Laplace y $3\,\%$
+con $3\,\rsoi$. Laplace y Hill quedan cerca del mejor compromiso.
+
+\subsection{Voyager 2 con ambos modelos}\label{sec:voy}
+
+Partiendo del estado real del 4 de junio de 1979 (a $0.58\,\rsoi$ de Júpiter), el Modelo 2
+básico sigue la trayectoria real con 1300~km de error en el periapsis, mientras que la hipérbola
+kepleriana se desvía 100\,000~km. Después del periapsis, sin embargo, se separa hasta 68\,000~km
+en 11 días y no reproduce la caída de la energía jovicéntrica real: la $\vinf$ equivalente pasa
+de 7.650 a 7.578~km/s, y en el modelo solo baja a 7.640 por la marea solar
+(figura~\ref{fig:voy}b).
+
+Para encontrar la causa se calculó la aceleración real de la sonda (derivada numérica de la
+velocidad del kernel) menos la gravitacional del modelo (figura~\ref{fig:voy}a). Con Júpiter
+puntual aparecen los sobrevuelos de Ganímedes y Europa. Con el modelo ampliado el residuo cae a
+$6\times10^{-4}$~mm/s$^2$, salvo en un intervalo de 76.6 minutos que empieza 130 minutos después
+del máximo acercamiento, en el que la sonda tiene una aceleración constante de 2.83~mm/s$^2$
+($\Delta v = 13.0$~m/s) casi opuesta a su velocidad respecto a Júpiter. Una aceleración así no
+es gravitacional; es el empuje de una maniobra. La crónica de la misión \cite{morrison1980}
+describe, en efecto, un encendido de 76 minutos unas dos horas después del máximo acercamiento.
+El sobrevuelo real no fue del todo balístico.
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/fig09_voyager2_satelites.png}
+\caption{Voyager~2 cerca del máximo acercamiento a Júpiter. (a) Aceleración real menos la
+gravitacional del modelo, con Júpiter puntual y con satélites y $J_2$: lo que queda es un
+encendido de 76 minutos. (b) Energía jovicéntrica, expresada como
+$\sqrt{2\varepsilon_{\mathrm J}}$, de los datos reales y de tres versiones del Modelo 2.}
+\label{fig:voy}
+\end{figure}
+
+La caída de 0.072~km/s queda repartida así: marea solar 0.010, satélites y $J_2$ 0.029 y
+maniobra 0.033. Con los tres efectos el modelo termina en 7.5780~km/s (real: 7.5777), el error
+en el periapsis baja a 310~km y el tramo de 11 días posterior a la maniobra, integrado desde el
+estado real, se reproduce con 6~km de error (790~km con Júpiter puntual). La masa puntual,
+despreciable para el diseño preliminar ($0.4\,\%$ de $\vinf$), era lo que limitaba al Modelo 2.
+
+\video{1JzqB87UpJlRrGls2nMdCAo0X2l7jum-V}{la trayectoria real de Voyager~2 y la maniobra}
+\subsection{Uso del asistente de IA}
+
+Se usó un asistente de IA (Claude) para escribir la mayor parte del código, borradores de
+texto y la deducción de la formulación. Siguiendo la metodología de las 4D \cite{dakan2025},
+cada afirmación cuantitativa se aceptó solo tras una verificación independiente; la bitácora
+del repositorio registra 32 entradas y 16 errores del asistente. Tres ejemplos: el solucionador
+de Lambert fallaba en transferencias de más de \ang{180} (detectado al comparar con integración
+numérica); la primera comprobación de~\eqref{eq:DE} con datos reales daba un acuerdo fortuito
+del $0.6\,\%$, porque omitía el potencial de Júpiter y usaba el $n$ medio, dos errores del
+$5\,\%$ que se compensaban (detectado al rehacer el balance de energía); y el
+asistente atribuyó la caída de energía de Voyager~2 solo a los satélites, cuando la mitad es la
+maniobra (detectado con la aceleración residual y confirmado con una fuente histórica).
+
+\section{Conclusiones y recomendaciones}\label{sec:conclusiones}
+
+En el sistema de Júpiter se conservan, de forma aproximada, la energía y el momento angular
+jovicéntricos, y con ellos $|\vec v_\infty|$; en el sistema del Sol no se conserva ni la energía
+ni el momento angular de la sonda, y la ganancia sale del movimiento orbital del planeta. En el
+sistema que rota con Júpiter se conserva exactamente $h = E - n\ell_z$ si la órbita es circular.
+Con los datos de Voyager~2 la relación $\Delta E = n\Delta\ell_z$ se cumple al $0.4\,\%$ solo con
+la velocidad angular instantánea de Júpiter, que en 1979 estaba cerca del afelio.
+
+Las cónicas empalmadas con efemérides reales reproducen las ventanas de 1977 y predicen el
+periapsis de las Voyager con error menor al $4\,\%$. Su error en la ganancia de energía es menor
+al $2\,\%$ para $\vinf\gtrsim 8$~km/s y supera el $10\,\%$ para $\vinf\lesssim 3$~km/s; en ese
+régimen sirven como primera aproximación y deben corregirse con integración numérica. El
+Modelo~2 reproduce la trayectoria real de Voyager~2 solo si Júpiter no es una masa puntual y se
+incluye la maniobra de la sonda. Falta repetir el barrido en tres dimensiones y con la órbita excéntrica de Júpiter.
+
+\begin{thebibliography}{99}\small\setlength{\itemsep}{0pt}
+\bibitem{flandro1966} G.~A. Flandro. Fast reconnaissance missions to the outer solar system
+utilizing energy derived from the gravitational field of Jupiter. \emph{Astronautica Acta}
+12, 329--337 (1966).
+\bibitem{kohlhase1977} C.~E. Kohlhase y P.~A. Penzo. Voyager mission description.
+\emph{Space Science Reviews} 21, 77--101 (1977).
+\bibitem{curtis2020} H.~D. Curtis. \emph{Orbital Mechanics for Engineering Students}.
+Butterworth-Heinemann, 4.\textsuperscript{a} ed., 2020.
+\bibitem{goldstein2002} H.~Goldstein, C.~Poole y J.~Safko. \emph{Classical Mechanics}.
+Addison-Wesley, 3.\textsuperscript{a} ed., 2002.
+\bibitem{murray1999} C.~D. Murray y S.~F. Dermott. \emph{Solar System Dynamics}.
+Cambridge University Press, 1999.
+\bibitem{rein2012} H.~Rein y S.-F. Liu. REBOUND: an open-source multi-purpose $N$-body code
+for collisional dynamics. \emph{Astronomy \& Astrophysics} 537, A128 (2012).
+\bibitem{rein2015} H.~Rein y D.~S. Spiegel. IAS15: a fast, adaptive, high-order integrator
+for gravitational dynamics. \emph{MNRAS} 446, 1424--1437 (2015).
+\bibitem{folkner2009} W.~M. Folkner, J.~G. Williams y D.~H. Boggs. The planetary and lunar
+ephemeris DE 421. \emph{IPN Progress Report} 42-178 (2009).
+\bibitem{archinal2018} B.~A. Archinal \emph{et al.} Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2015. \emph{Celestial Mechanics and Dynamical Astronomy} 130, 22 (2018).
+\bibitem{jacobson} R.~A. Jacobson. JUP230: solución de las órbitas de los satélites de Júpiter. Jet Propulsion Laboratory, NASA.
+\bibitem{standish} E.~M. Standish. Keplerian elements for approximate positions of the major planets. JPL Solar System Dynamics. \url{https://ssd.jpl.nasa.gov/planets/approx_pos.html}.
+\bibitem{cross} D.~Cross. Astronomy Engine (software), versión 2.1.19.
+\url{https://github.com/cosinekitty/astronomy}.
+\bibitem{acton1996} C.~H. Acton. Ancillary data services of NASA's Navigation and Ancillary
+Information Facility. \emph{Planetary and Space Science} 44, 65--70 (1996).
+\bibitem{pds} PDS Ring-Moon Systems Node. Voyager mission.
+\url{https://pds-rings.seti.org/voyager/mission/}.
+\bibitem{morrison1980} D.~Morrison y J.~Samz. \emph{Voyage to Jupiter}. NASA SP-439,
+Washington D.C., 1980, cap.~7.
+\bibitem{dakan2025} R.~Dakan y J.~Feller. The AI fluency framework: a descriptive and normative
+model of human-AI interaction for higher education (2025). \url{https://aifluencyframework.org}.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,258 @@
+% Compilar con XeLaTeX o LuaLaTeX.
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[spanish]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setmainlanguage{spanish}
+\fi
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\setlength{\emergencystretch}{3em}
+\pagestyle{plain}
+
+\newcounter{preg}
+\newcommand{\pregunta}[1]{\refstepcounter{preg}\par\medskip\noindent\textbf{P\thepreg.\ #1}\par\nopagebreak\smallskip}
+\newcommand{\RJ}{R_{\mathrm J}}
+
+\title{Reto III.3: banco de preguntas para la defensa}
+\author{Frankly Giovanni Poveda Pinzón \and Camila Castillo López}
+\date{noviembre de 2026}
+
+\begin{document}
+\maketitle
+
+\noindent Preguntas probables sobre la física, el código, los datos y las decisiones, con una
+respuesta corta. Las marcadas con (T) conviene saber hacerlas en el tablero.
+
+\section{Formulación y física}
+
+\pregunta{¿Por qué la sonda gana energía si la gravedad es conservativa?}
+Porque la energía que se conserva es la del sistema completo. En el sistema de Júpiter la
+sonda sale con la misma rapidez $v_\infty$ con la que llegó; solo cambia la dirección. Visto
+desde el Sol, $\vec v = \vec v_{\mathrm J} + \vec v_\infty$, y al girar $\vec v_\infty$ cambia
+$|\vec v|$. En el sistema del Sol el potencial de Júpiter depende del tiempo (Júpiter se mueve),
+así que la energía de la sonda no tiene por qué conservarse. La energía la cede Júpiter, cuyo
+cambio es imperceptible por la razón de masas.
+
+\pregunta{(T) Escriba el lagrangiano en el sistema rotante y explique cada término.}
+$L = \tfrac12[(\dot x - ny)^2 + (\dot y + nx)^2 + \dot z^2] + GM_1/r_1 + GM_2/r_2$. Los
+paréntesis son la velocidad inercial $\dot{\vec r} + \vec\omega\times\vec r$ con
+$\vec\omega = n\hat z$. Desarrollado: $T_2 = \tfrac12\dot r^2$ (cinética relativa),
+$T_1 = n(x\dot y - y\dot x)$ (da Coriolis) y $T_0 = \tfrac12 n^2(x^2+y^2)$ (centrífugo).
+
+\pregunta{(T) Deduzca la ecuación de movimiento en $x$.}
+$\partial L/\partial\dot x = \dot x - ny$, su derivada temporal $\ddot x - n\dot y$;
+$\partial L/\partial x = n(\dot y + nx) + \partial_x(GM_1/r_1 + GM_2/r_2) = n\dot y + \partial_x\Omega$.
+Restando: $\ddot x - 2n\dot y = \partial_x\Omega$.
+
+\pregunta{¿Qué se conserva en el sistema rotante y por qué?}
+La función de energía $h = \sum\dot q\,\partial L/\partial\dot q - L$, porque
+$dh/dt = -\partial L/\partial t$ y en ese sistema el Sol y Júpiter están quietos, así que $L$ no
+depende explícitamente de $t$. Resulta $h = \tfrac12\dot r^2 - \Omega$; $C_J = -2h$ es la constante
+de Jacobi.
+
+\pregunta{(T) ¿Por qué no aparece el término de Coriolis en $h$?}
+Por el teorema de Euler para funciones homogéneas: $\sum\dot q\,\partial T_k/\partial\dot q = kT_k$.
+Entonces $\sum\dot q\,\partial L/\partial\dot q = 2T_2 + T_1$ y $h = 2T_2 + T_1 - (T_2+T_1+T_0-V)
+= T_2 - T_0 + V$. Físicamente, la fuerza de Coriolis es perpendicular a la velocidad y no hace
+trabajo.
+
+\pregunta{(T) Muestre que $h = E - n\ell_z$.}
+$E = T + V = T_2 + T_1 + T_0 + V$ y $n\ell_z = n[x(\dot y + nx) - y(\dot x - ny)] = T_1 + 2T_0$.
+Restando: $E - n\ell_z = T_2 - T_0 + V = h$.
+
+\pregunta{Si $h$ se conserva, ¿por qué no se conservan $E$ ni $\ell_z$?}
+En el sistema inercial el potencial depende de $\varphi$ y de $t$ solo como $\varphi - nt$. Entonces
+$dE/dt = \partial V/\partial t \ne 0$ (no hay simetría temporal) y
+$d\ell_z/dt = -\partial V/\partial\varphi \ne 0$ (no hay simetría rotacional). Como
+$\partial V/\partial t = -n\,\partial V/\partial\varphi$, $dE/dt = n\,d\ell_z/dt$. La simetría
+combinada (trasladar $t$ y rotar $n\Delta t$) da, por Noether, $E - n\ell_z$.
+
+\pregunta{¿Qué es el parámetro de Tisserand y por qué no se conserva en los datos?}
+Es $h$ escrito con los elementos heliocéntricos de la sonda, suponiendo Júpiter en órbita circular,
+$\alpha\to0$ y la sonda lejos de Júpiter: $T_{\mathrm J} = a/a_s + 2\cos i\sqrt{(a_s/a)(1-e^2)}$.
+Con Voyager~2, prolongando la trayectoria hasta más de $3\,r_{\mathrm{SOI}}$ a cada lado, pasa de
+2.576 a 2.670 ($3.6\,\%$). No es por estar cerca de Júpiter, sino porque la órbita de Júpiter es
+excéntrica: Tisserand se deduce de $h$ con el $n$ medio.
+
+\pregunta{(T) Si la órbita de Júpiter no es circular, ¿qué queda de $\Delta E = n\Delta\ell_z$?}
+En el sistema inercial, $dE/dt = \partial V/\partial t = \sum_i\vec a_i\cdot\vec V_i$: la energía
+cambia por lo que cada cuerpo acelera a la sonda en la dirección en que ese cuerpo se mueve.
+Escribiendo $\vec V_i = \omega\,\hat z\times\vec R_i + \dot R_i\hat R_i$ queda
+$dE/dt = \omega(t)\,d\ell_z/dt + \sum_i\dot R_i(\vec a_i\cdot\hat R_i)$. Con órbita circular
+($\omega = n$, $\dot R_i = 0$) se recupera Jacobi. Con órbita excéntrica hay que usar la velocidad
+angular instantánea $\omega = n\sqrt{1-e^2}\,(a/R)^2$, que para Júpiter va de $0.91\,n$ a $1.10\,n$.
+
+\pregunta{¿Se cumple $\Delta E = n\Delta\ell_z$ con los datos reales de Voyager~2?}
+Con el $n$ medio, no: $\Delta E = 164.2$ y $n\Delta\ell_z = 173.2$~km$^2$/s$^2$ ($5.5\,\%$). En julio
+de 1979 Júpiter estaba a 5.33~UA, cerca del afelio, y giraba a $0.952\,n$. Con la velocidad angular
+instantánea, $\int\omega\,d\ell_z = 164.8$ ($0.4\,\%$). Ese resto se reparte entre la velocidad
+radial de Júpiter ($-0.15$) y las fuerzas que no están en el potencial, satélites y maniobra
+($-0.48$); el Modelo~2 ampliado da para estas últimas $-0.47$ por otro camino.
+
+\pregunta{¿La sonda quedó en una órbita de escape?}
+Sí. Lejos de Júpiter (más de $3\,r_{\mathrm{SOI}}$) la energía heliocéntrica pasa de $-121.8$ a
+$+26.3$~km$^2$/s$^2$ y la excentricidad de 0.73 a 1.30. Ojo: al final del registro, todavía dentro
+de la esfera de influencia, la energía calculada solo con el Sol es $+51$; ese valor no es el
+asintótico porque falta el potencial de Júpiter.
+
+\pregunta{(T) Deduzca el ángulo de giro $\delta$.}
+Hipérbola $\rho = (\ell^2/\mu)/(1+e\cos f)$. Las asíntotas: $\cos f_\infty = -1/e$. El ángulo entre
+las velocidades de entrada y salida es $\delta = 2f_\infty - \pi$, así que
+$\sin(\delta/2) = -\cos f_\infty = 1/e$. Con $\ell = r_pv_p$ y $v_p^2 = v_\infty^2 + 2\mu/r_p$ se
+obtiene $e = 1 + r_pv_\infty^2/\mu$.
+
+\pregunta{¿Cómo se gana energía y cómo se pierde?}
+$\Delta E = \vec v_{\mathrm J}\cdot\Delta\vec v_\infty$. Si $\vec v_\infty$ gira hacia la dirección de
+movimiento de Júpiter (la sonda pasa por detrás del planeta), gana energía; si gira en contra
+(pasa por delante), la pierde. Es coherente con $\Delta E = n\Delta\ell_z$, porque
+$n\Delta\ell_z = na\,\Delta v_t = v_{\mathrm J}\Delta v_t$.
+
+\pregunta{¿Qué es la esfera de influencia y de dónde sale $a(M_2/M_1)^{2/5}$?}
+Laplace compara el cociente perturbación/atracción en los dos sistemas. Desde Júpiter, la marea
+solar $\sim GM_1\rho/a^3$ frente a $GM_2/\rho^2$; desde el Sol, $GM_2/\rho^2$ frente a $GM_1/a^2$.
+Igualando los cocientes: $\rho^5 = (M_2/M_1)^2a^5$. Para Júpiter son $674\,\RJ \approx 48$
+millones de km.
+
+\pregunta{Si en el borde de la esfera el Sol atrae 4 veces más que Júpiter, ¿por qué se ignora?}
+Porque en el sistema de Júpiter lo que entra es la \emph{diferencia} entre lo que el Sol acelera a
+la sonda y a Júpiter (el término $\vec d/d^3$ cancela la parte uniforme). Esa diferencia es la
+marea, de orden $GM_1\rho/a^3$, mucho menor que la atracción total.
+
+\section{Modelo 1 y código}
+
+\pregunta{¿Qué es el problema de Lambert y cómo lo resolvió?}
+Dadas dos posiciones y el tiempo de vuelo, hallar la órbita que las une. Se usa la variable
+universal $z$ (Curtis, alg.~5.2): $F(z) = 0$ es monótona; se busca un intervalo con cambio de signo
+sobre una malla y se refina con el método de Brent. Se verifica propagando la solución con un
+integrador numérico (llega al punto pedido) y con el límite de Hohmann.
+
+\pregunta{¿Cómo decide si un sobrevuelo es factible?}
+Con los dos tramos de Lambert se obtienen $\vec v_{\infty,\mathrm{ent}}$ y el
+$\vec v_{\infty,\mathrm{sal}}$ que exige el segundo tramo. Es factible sin motor si sus magnitudes
+coinciden (tolerancia 0.3~km/s en la rejilla y cero en el refinado) y si el $r_p$ que da
+$\sin(\delta/2) = 1/e$ es mayor que $2\,\RJ$.
+
+\pregunta{¿Qué es $C_3$ y por qué probó varios valores?}
+$C_3 = v_\infty^2$ al salir de la Tierra, la energía que debe dar el lanzador. No conocemos el valor
+exacto del cohete de 1977, así que es una hipótesis (H8) y estudiamos la sensibilidad. Con
+efemérides reales, las fechas de Voyager~2 requieren $C_3 = 103$~km$^2$/s$^2$.
+
+\pregunta{¿Por qué las órbitas circulares daban un error tan grande?}
+Júpiter tiene excentricidad 0.048: su distancia al Sol varía $\pm5\,\%$ y su velocidad también. Eso
+cambia $\vec v_\infty$ y el giro necesario. En las fechas de Voyager~2, el $r_p$ requerido pasa de
+12.6 (circular) a $9.72\,\RJ$ (DE421); el real fue $10.09\,\RJ$.
+
+\section{Modelo 2 y control numérico}
+
+\pregunta{¿Por qué REBOUND con IAS15?}
+Es un integrador de orden 15 con paso adaptativo: da pasos de horas cerca del periapsis y de días
+en el crucero, y mantiene el error en la precisión de máquina. Lo controlamos con un integrador
+independiente (DOP853 de SciPy).
+
+\pregunta{¿Cómo sabe que la simulación es correcta?}
+(1) La constante de Jacobi se conserva a $2.5\times10^{-14}$ mientras la energía heliocéntrica
+cambia más de 100~km$^2$/s$^2$. (2) Al cambiar la tolerancia de $10^{-4}$ a $10^{-11}$ la posición
+final a 250 días cambia como mucho 2.1~m (y menos de 2~cm con $\epsilon \le 10^{-6}$); DOP853 difiere 3~m. (3) Límites: sin masa de Júpiter no hay
+cambio de energía, y cerca del periapsis los dos modelos coinciden.
+
+\pregunta{¿Cómo midió el error de las cónicas? ¿Por qué esa medida?}
+Ambos modelos parten del mismo estado en el periapsis y se propagan hacia atrás y adelante hasta
+más de $3\,r_{\mathrm{SOI}}$. Se compara la ganancia de energía heliocéntrica $\Delta E$ entre los
+extremos. Es la cantidad física que produce el sobrevuelo y, a diferencia de un error de posición a
+tiempo fijo, no depende de cuánto se propague después.
+
+\pregunta{¿Por qué el error crece al bajar $v_\infty$?}
+Con $v_\infty$ pequeña la sonda tarda más en cruzar la región cercana al borde de la esfera, donde
+el Sol y Júpiter tienen efectos comparables; las cónicas ignoran uno u otro todo ese tiempo. Era la
+predicción escrita antes de simular.
+
+\pregunta{¿Por qué el error cambia de signo con radios de empalme grandes?}
+Con radios pequeños se ignora a Júpiter durante mucho tiempo fuera de la esfera y el error es
+grande y positivo (las cónicas sobreestiman la ganancia). Con radios grandes se ignora al Sol dentro
+de la esfera, un error de signo opuesto que domina cuando $v_\infty$ es alta. Los dos efectos se
+compensan en parte; Laplace y Hill quedan cerca del punto de compromiso.
+
+\pregunta{¿Por qué decía que el Modelo 2 ``violaba'' Jacobi y luego no?}
+La primera medida usaba el Sol fijo en el origen, una aproximación: daba variaciones de $10^{-3}$,
+imposibles para un invariante exacto. Con la fórmula baricéntrica correcta la variación es
+$2.5\times10^{-14}$. Es uno de los errores de la IA registrados en la bitácora.
+
+\section{Datos reales}
+
+\pregunta{¿De dónde salen los datos y cómo sabe que son correctos?}
+Planetas: efeméride JPL DE421. Voyager~2: kernel SPICE \texttt{vgr2\_jup230.bsp} de NAIF, leído con
+CSPICE. Satélites galileanos: paquete Astronomy Engine. Comprobación con valores publicados: el
+kernel da el máximo acercamiento al centro de Júpiter el 9 jul 1979 a las 22:29:01~UTC a
+721\,673~km (publicado: 22:29~UTC, 721\,670~km), y las distancias mínimas a los cuatro satélites
+coinciden al $0.2\,\%$ o mejor (Ganímedes: 62\,078 frente a 62\,130~km). Para DE421 se comprueban
+la posición de la Tierra en J2000 y las distancias e inclinaciones de Júpiter y Saturno.
+
+\pregunta{¿Usó los datos de Voyager para ajustar algo?}
+No. Las fechas de las Voyager no entran en la búsqueda; se evalúan después. La trayectoria SPICE
+solo se usa para comparar. Por eso cuentan como ``datos no utilizados en el ajuste''.
+
+\pregunta{¿Por qué el Modelo 2 no seguía a Voyager~2 después del periapsis?}
+Con Júpiter puntual el modelo acierta el periapsis con 1300~km de error, pero después se separa
+68\,000~km en 11 días y no reproduce la caída de la energía jovicéntrica real ($v_\infty$
+equivalente de 7.650 a 7.578~km/s). Faltaban dos cosas. Los satélites galileanos y el achatamiento
+de Júpiter explican $-0.029$~km/s. El resto, $-0.033$~km/s, es una maniobra: la sonda encendió
+sus motores 76 minutos, unas dos horas después del máximo acercamiento. Con todo incluido el
+modelo termina en 7.5780~km/s (real: 7.5777) y el tramo posterior a la maniobra se reproduce con
+6~km de error en 11 días.
+
+\pregunta{¿Cómo sabe que es una maniobra y no un error de los datos o del modelo?}
+Se calculó la aceleración real (derivada numérica de la velocidad del kernel) menos la
+gravitacional del modelo con satélites y $J_2$. Es prácticamente cero ($6\times10^{-4}$~mm/s$^2$)
+durante todo el encuentro, salvo un intervalo de 76.6 minutos que empieza 130 minutos después del
+máximo acercamiento, con un valor constante de 2.83~mm/s$^2$ ($\Delta v = 13.0$~m/s). La gravedad no
+produce un escalón así. Además hay una fuente independiente: el libro de NASA \emph{Voyage to
+Jupiter} (SP-439, 1980) cuenta que la corrección de trayectoria fue un encendido de 76 minutos
+dos horas después del máximo acercamiento.
+
+\pregunta{Entonces, ¿el sobrevuelo de Voyager~2 fue ``sin motor''?}
+Casi. La maniobra fue de 13~m/s, el $0.2\,\%$ de $v_\infty$, así que para el diseño (Modelo~1) la
+hipótesis de sobrevuelo balístico es buena: predice el periapsis con $3.7\,\%$ de error. Pero para
+seguir la trayectoria real a nivel de kilómetros hay que incluirla.
+
+\section{Decisiones e IA}
+
+\pregunta{¿Cuál fue la hipótesis más importante?}
+Las órbitas planetarias: pasar de circulares a reales redujo el error en el periapsis de Voyager~2
+de 25\,\% a 3.7\,\%. Para el error de las cónicas, la más importante es el radio de empalme.
+
+\pregunta{¿Qué delegó a la IA y qué no?}
+Se delegó lo verificable: código, álgebra intermedia, búsqueda de fuentes de datos y borradores.
+Cada resultado se aceptó solo con una verificación independiente. La elección del enfoque, la
+medida del error y la interpretación son del equipo. La formulación lagrangiana la redactó la
+IA por tiempo; se verificó con sympy y numéricamente, y el equipo la re-derivó.
+
+\pregunta{Dé un ejemplo de error de la IA y cómo lo detectó.}
+El solucionador de Lambert fallaba en transferencias de más de \(180^\circ\): una prueba que
+propaga la solución con un integrador numérico mostró que no llegaba al punto pedido. Otro: la IA
+concluyó que con $C_3\leq 85$ se reproducía a Voyager~2; con efemérides reales se vio que se
+necesitan 103~km$^2$/s$^2$. El más instructivo: la IA comprobó $\Delta E = n\Delta\ell_z$ con Voyager~2
+y obtuvo un acuerdo del $0.6\,\%$. Era fortuito: omitió el potencial de Júpiter y usó el $n$ medio,
+dos errores del $5\,\%$ que se compensaban. Un resultado que sale bien también hay que revisarlo.
+
+\pregunta{¿Quién encontró los errores de la última revisión?}
+La auditoría del 10 de noviembre se delegó al asistente, con la instrucción de no dar por bueno
+nada de lo anterior. Encontró ocho errores de su propio trabajo. Lo que los hace creíbles no es
+quién los encontró sino la evidencia, que no depende del código: horas y distancias publicadas de
+los sobrevuelos, un balance de energía que cierra, y una fuente histórica para la maniobra.
+
+\pregunta{Si otro equipo obtiene un error distinto para las cónicas, ¿quién tiene razón?}
+Ambos pueden tenerla: el número depende de la medida del error (aquí, $\Delta E$ desde el mismo
+periapsis), del radio de empalme y de $r_p$. Lo importante es que la medida esté declarada y
+verificada. Nuestro resultado está acotado por la convergencia (metros) y por el invariante de
+Jacobi ($10^{-14}$).
+
+\end{document}

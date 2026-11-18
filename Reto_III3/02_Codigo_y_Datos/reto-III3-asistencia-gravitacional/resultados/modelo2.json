@@ -1,0 +1,348 @@
+{
+  "A_jacobi": {
+    "max_variacion_relativa_h": 2.54e-14,
+    "E_helio_inicio": -157.0,
+    "E_helio_fin": -40.4
+  },
+  "B_convergencia": {
+    "posicion_final_vs_eps1e-12_km": {
+      "1e-04": 0.00207,
+      "1e-05": 0.000103,
+      "1e-06": 1.39e-05,
+      "1e-07": 7.73e-06,
+      "1e-08": 3.84e-06,
+      "1e-09": 6.28e-06,
+      "1e-10": 4.92e-07,
+      "1e-11": 8.94e-07
+    },
+    "DOP853_vs_IAS15_km": 0.00282
+  },
+  "C_error_conicas_vs_vinf_y_Re": {
+    "0.25 r_SOI": {
+      "2.5": {
+        "error_dE_%": 70.2,
+        "jacobi_violada_conicas": 0.000707
+      },
+      "3": {
+        "error_dE_%": 56.9,
+        "jacobi_violada_conicas": 0.000651
+      },
+      "4": {
+        "error_dE_%": 38.4,
+        "jacobi_violada_conicas": 0.000487
+      },
+      "5": {
+        "error_dE_%": 27.1,
+        "jacobi_violada_conicas": 0.000351
+      },
+      "6": {
+        "error_dE_%": 20.0,
+        "jacobi_violada_conicas": 0.000251
+      },
+      "7": {
+        "error_dE_%": 15.2,
+        "jacobi_violada_conicas": 0.000178
+      },
+      "8": {
+        "error_dE_%": 12.0,
+        "jacobi_violada_conicas": 0.000126
+      },
+      "10": {
+        "error_dE_%": 7.85,
+        "jacobi_violada_conicas": 6.79e-05
+      },
+      "12": {
+        "error_dE_%": 5.49,
+        "jacobi_violada_conicas": 4.98e-05
+      },
+      "15": {
+        "error_dE_%": 3.5,
+        "jacobi_violada_conicas": 6.43e-05
+      }
+    },
+    "0.5 r_SOI": {
+      "2.5": {
+        "error_dE_%": 37.0,
+        "jacobi_violada_conicas": 0.000347
+      },
+      "3": {
+        "error_dE_%": 29.5,
+        "jacobi_violada_conicas": 0.000243
+      },
+      "4": {
+        "error_dE_%": 19.3,
+        "jacobi_violada_conicas": -4.3e-05
+      },
+      "5": {
+        "error_dE_%": 13.3,
+        "jacobi_violada_conicas": -0.000293
+      },
+      "6": {
+        "error_dE_%": 9.65,
+        "jacobi_violada_conicas": -0.000486
+      },
+      "7": {
+        "error_dE_%": 7.26,
+        "jacobi_violada_conicas": -0.000624
+      },
+      "8": {
+        "error_dE_%": 5.63,
+        "jacobi_violada_conicas": -0.000714
+      },
+      "10": {
+        "error_dE_%": 3.62,
+        "jacobi_violada_conicas": -0.000786
+      },
+      "12": {
+        "error_dE_%": 2.48,
+        "jacobi_violada_conicas": -0.000772
+      },
+      "15": {
+        "error_dE_%": 1.54,
+        "jacobi_violada_conicas": -0.000709
+      }
+    },
+    "r_SOI (Laplace)": {
+      "2.5": {
+        "error_dE_%": 17.5,
+        "jacobi_violada_conicas": -0.00108
+      },
+      "3": {
+        "error_dE_%": 13.8,
+        "jacobi_violada_conicas": -0.00143
+      },
+      "4": {
+        "error_dE_%": 8.67,
+        "jacobi_violada_conicas": -0.00218
+      },
+      "5": {
+        "error_dE_%": 5.72,
+        "jacobi_violada_conicas": -0.00283
+      },
+      "6": {
+        "error_dE_%": 3.92,
+        "jacobi_violada_conicas": -0.00333
+      },
+      "7": {
+        "error_dE_%": 2.76,
+        "jacobi_violada_conicas": -0.00368
+      },
+      "8": {
+        "error_dE_%": 1.98,
+        "jacobi_violada_conicas": -0.00389
+      },
+      "10": {
+        "error_dE_%": 1.03,
+        "jacobi_violada_conicas": -0.00399
+      },
+      "12": {
+        "error_dE_%": 0.521,
+        "jacobi_violada_conicas": -0.00385
+      },
+      "15": {
+        "error_dE_%": 0.127,
+        "jacobi_violada_conicas": -0.00361
+      }
+    },
+    "r_Hill": {
+      "2.5": {
+        "error_dE_%": 15.8,
+        "jacobi_violada_conicas": -0.00153
+      },
+      "3": {
+        "error_dE_%": 12.4,
+        "jacobi_violada_conicas": -0.00194
+      },
+      "4": {
+        "error_dE_%": 7.74,
+        "jacobi_violada_conicas": -0.00282
+      },
+      "5": {
+        "error_dE_%": 5.03,
+        "jacobi_violada_conicas": -0.00356
+      },
+      "6": {
+        "error_dE_%": 3.37,
+        "jacobi_violada_conicas": -0.00414
+      },
+      "7": {
+        "error_dE_%": 2.31,
+        "jacobi_violada_conicas": -0.00454
+      },
+      "8": {
+        "error_dE_%": 1.59,
+        "jacobi_violada_conicas": -0.00478
+      },
+      "10": {
+        "error_dE_%": 0.723,
+        "jacobi_violada_conicas": -0.00488
+      },
+      "12": {
+        "error_dE_%": 0.261,
+        "jacobi_violada_conicas": -0.0047
+      },
+      "15": {
+        "error_dE_%": -0.0851,
+        "jacobi_violada_conicas": -0.00442
+      }
+    },
+    "2 r_SOI": {
+      "2.5": {
+        "error_dE_%": 12.4,
+        "jacobi_violada_conicas": -0.00756
+      },
+      "3": {
+        "error_dE_%": 9.23,
+        "jacobi_violada_conicas": -0.00884
+      },
+      "4": {
+        "error_dE_%": 4.92,
+        "jacobi_violada_conicas": -0.0111
+      },
+      "5": {
+        "error_dE_%": 2.43,
+        "jacobi_violada_conicas": -0.0129
+      },
+      "6": {
+        "error_dE_%": 0.92,
+        "jacobi_violada_conicas": -0.0143
+      },
+      "7": {
+        "error_dE_%": -0.0436,
+        "jacobi_violada_conicas": -0.0151
+      },
+      "8": {
+        "error_dE_%": -0.683,
+        "jacobi_violada_conicas": -0.0156
+      },
+      "10": {
+        "error_dE_%": -1.42,
+        "jacobi_violada_conicas": -0.0156
+      },
+      "12": {
+        "error_dE_%": -1.76,
+        "jacobi_violada_conicas": -0.015
+      },
+      "15": {
+        "error_dE_%": -1.94,
+        "jacobi_violada_conicas": -0.0142
+      }
+    },
+    "3 r_SOI": {
+      "2.5": {
+        "error_dE_%": 19.0,
+        "jacobi_violada_conicas": -0.0138
+      },
+      "3": {
+        "error_dE_%": 13.5,
+        "jacobi_violada_conicas": -0.0176
+      },
+      "4": {
+        "error_dE_%": 6.38,
+        "jacobi_violada_conicas": -0.0234
+      },
+      "5": {
+        "error_dE_%": 2.38,
+        "jacobi_violada_conicas": -0.0274
+      },
+      "6": {
+        "error_dE_%": -0.0234,
+        "jacobi_violada_conicas": -0.0301
+      },
+      "7": {
+        "error_dE_%": -1.54,
+        "jacobi_violada_conicas": -0.0317
+      },
+      "8": {
+        "error_dE_%": -2.54,
+        "jacobi_violada_conicas": -0.0325
+      },
+      "10": {
+        "error_dE_%": -3.66,
+        "jacobi_violada_conicas": -0.0324
+      },
+      "12": {
+        "error_dE_%": -4.17,
+        "jacobi_violada_conicas": -0.0311
+      },
+      "15": {
+        "error_dE_%": -4.42,
+        "jacobi_violada_conicas": -0.0299
+      }
+    }
+  },
+  "C_error_conicas_vs_rp_(Re=rSOI)_en_%": {
+    "r_p = 3 R_J": {
+      "2.5": 20.5,
+      "3": 16.0,
+      "4": 10.1,
+      "5": 6.78,
+      "6": 4.78,
+      "7": 3.5,
+      "8": 2.63,
+      "10": 1.57,
+      "12": 0.972,
+      "15": 0.471
+    },
+    "r_p = 10 R_J": {
+      "2.5": 17.5,
+      "3": 13.8,
+      "4": 8.67,
+      "5": 5.72,
+      "6": 3.92,
+      "7": 2.76,
+      "8": 1.98,
+      "10": 1.03,
+      "12": 0.521,
+      "15": 0.127
+    },
+    "r_p = 30 R_J": {
+      "2.5": 13.3,
+      "3": 10.6,
+      "4": 6.64,
+      "5": 4.2,
+      "6": 2.7,
+      "7": 1.74,
+      "8": 1.11,
+      "10": 0.404,
+      "12": 0.0716,
+      "15": -0.135
+    }
+  },
+  "C_jacobi_nbody_max": 1.75e-14,
+  "D_efecto_saturno": {
+    "5": {
+      "dE_sin_saturno": 106.0,
+      "dE_con_saturno": 106.0,
+      "cambio_rel": 0.000404
+    },
+    "7.6": {
+      "dE_sin_saturno": 116.0,
+      "dE_con_saturno": 116.0,
+      "cambio_rel": 0.000214
+    },
+    "12": {
+      "dE_sin_saturno": 96.6,
+      "dE_con_saturno": 96.6,
+      "cambio_rel": 9.15e-05
+    }
+  },
+  "E_voyager2": {
+    "intervalo": [
+      "1979-06-04 17:13",
+      "1979-07-20 23:44"
+    ],
+    "error_nbody_en_periapsis_km": 1310.0,
+    "error_nbody_final_km": 67600.0,
+    "error_conica_en_periapsis_km": 99600.0,
+    "error_conica_final_km": 257000.0,
+    "vinf_eq_nbody_inicio_fin": [
+      7.65,
+      7.64
+    ],
+    "vinf_eq_spice_inicio_fin": [
+      7.65,
+      7.58
+    ]
+  }
+}

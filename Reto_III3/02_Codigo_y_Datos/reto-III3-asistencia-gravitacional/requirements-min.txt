@@ -1,0 +1,12 @@
+# Alternativa si su Python es 3.10 u 3.11 (requirements.txt fija versiones que piden >= 3.12).
+# Los resultados deben coincidir con los publicados a la precisión indicada en las pruebas.
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+pytest>=7
+jplephem>=2.18
+de421==2008.1
+spiceypy>=6.0
+sympy>=1.12
+rebound>=4.0
+astronomy-engine>=2.1.0

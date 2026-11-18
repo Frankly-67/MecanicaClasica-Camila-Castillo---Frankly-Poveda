@@ -1,0 +1,704 @@
+% Compilar con XeLaTeX o LuaLaTeX (en Overleaf: Menú > Compilador).
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[spanish]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setmainlanguage{spanish}
+\fi
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+
+\pagestyle{empty}
+\setlength{\emergencystretch}{3em}
+\allowdisplaybreaks
+
+\title{Reto III.3: asistencia gravitacional en Júpiter\\ Formulación lagrangiana y cantidades conservadas}
+\author{Frankly Giovanni Poveda Pinzón \and Camila Castillo López}
+\date{10 de noviembre de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{Sistema, coordenadas y suposiciones}
+
+Se estudia el movimiento de la sonda (masa $m$) bajo la atracción del Sol (masa $M_1$) y de
+Júpiter (masa $M_2$). Se supone:
+\begin{enumerate}
+\item $m \ll M_2 < M_1$: la sonda no perturba el movimiento del Sol ni de Júpiter
+(problema restringido). La deducción no necesita que $M_2$ sea pequeña frente a $M_1$; eso
+solo se usa en las secciones 7.3 y 8.
+\item El Sol y Júpiter giran en órbitas circulares alrededor de su centro de masa, separados
+una distancia constante $a$, con velocidad angular constante $n$.
+\item Los demás planetas y los satélites de Júpiter se desprecian.
+\end{enumerate}
+
+\subsection{Posición del Sol y de Júpiter}
+
+Se coloca el origen en el centro de masa y el eje $x$ sobre la recta Sol--Júpiter. Si $x_1$ y
+$x_2$ son las posiciones del Sol y de Júpiter, las condiciones son
+\[
+M_1 x_1 + M_2 x_2 = 0 \quad\text{(centro de masa en el origen)},
+\qquad x_2 - x_1 = a .
+\]
+De la primera, $x_1 = -\dfrac{M_2}{M_1}x_2$. Sustituyendo en la segunda,
+$x_2\left(1 + \dfrac{M_2}{M_1}\right) = a$, de donde
+\[
+x_2 = \frac{M_1}{M_1+M_2}\,a = (1-\alpha)\,a, \qquad
+x_1 = x_2 - a = -\frac{M_2}{M_1+M_2}\,a = -\alpha\,a,
+\qquad \alpha \equiv \frac{M_2}{M_1+M_2}.
+\]
+Para Júpiter, $\alpha \approx 9.5\times10^{-4}$: el centro de masa está casi en el Sol.
+
+\subsection{Velocidad angular}
+
+Júpiter describe un círculo de radio $(1-\alpha)a$ alrededor del centro de masa. La fuerza
+centrípeta la da la atracción del Sol:
+\[
+M_2\, n^2 (1-\alpha) a = \frac{G M_1 M_2}{a^2}
+\;\;\Longrightarrow\;\;
+n^2 = \frac{G M_1}{(1-\alpha)a^3} = \frac{G M_1}{a^3}\,\frac{M_1+M_2}{M_1}
+= \frac{G(M_1+M_2)}{a^3}.
+\]
+Es la tercera ley de Kepler: $n^2 a^3 = G(M_1+M_2)$.
+
+\subsection{Sistema de referencia y coordenadas generalizadas}
+
+Se usa un sistema que \emph{rota} con velocidad angular $\vec\omega = n\,\hat z$ alrededor del
+centro de masa, con el eje $x$ apuntando siempre hacia Júpiter. En él el Sol y Júpiter están
+quietos en
+\[
+\vec R_1 = (-\alpha a,\,0,\,0), \qquad \vec R_2 = \bigl((1-\alpha) a,\,0,\,0\bigr).
+\]
+Las coordenadas generalizadas son las cartesianas de la sonda en este sistema, $q = (x,y,z)$.
+No hay vínculos: son tres grados de libertad (dos si el movimiento es plano). Las distancias
+de la sonda al Sol y a Júpiter son
+\[
+r_1 = \sqrt{(x+\alpha a)^2 + y^2 + z^2}, \qquad
+r_2 = \sqrt{\bigl(x-(1-\alpha)a\bigr)^2 + y^2 + z^2}.
+\]
+
+\section{Energía cinética}
+
+\subsection{Velocidad respecto al sistema inercial}
+
+La energía cinética que entra en el lagrangiano es la medida en un sistema inercial. Sean
+$(X,Y,Z)$ las coordenadas inerciales de la sonda. Como el sistema rotante gira un ángulo $nt$
+alrededor de $z$,
+\[
+X = x\cos nt - y\sin nt, \qquad
+Y = x\sin nt + y\cos nt, \qquad
+Z = z .
+\]
+Derivando respecto al tiempo (regla del producto, con $x,y$ funciones de $t$):
+\begin{align*}
+\dot X &= \dot x\cos nt - n x\sin nt - \dot y\sin nt - n y\cos nt
+        = (\dot x - n y)\cos nt - (\dot y + n x)\sin nt,\\
+\dot Y &= \dot x\sin nt + n x\cos nt + \dot y\cos nt - n y\sin nt
+        = (\dot x - n y)\sin nt + (\dot y + n x)\cos nt,\\
+\dot Z &= \dot z .
+\end{align*}
+Las dos primeras líneas son una rotación de ángulo $nt$ aplicada al vector
+$(\dot x - ny,\; \dot y + nx)$. Una rotación no cambia la norma, así que
+\[
+\dot X^2 + \dot Y^2 + \dot Z^2 = (\dot x - n y)^2 + (\dot y + n x)^2 + \dot z^2 .
+\]
+Esto es lo mismo que la fórmula vectorial $\vec v_{\mathrm{in}} = \dot{\vec r} + \vec\omega\times\vec r$,
+ya que $\vec\omega\times\vec r = (0,0,n)\times(x,y,z) = (-ny,\; nx,\; 0)$.
+
+\subsection{Expresión de $T$}
+
+Por unidad de masa de la sonda,
+\begin{equation}
+T = \frac12\Bigl[(\dot x - n y)^2 + (\dot y + n x)^2 + \dot z^2\Bigr].
+\label{eq:T}
+\end{equation}
+Desarrollando los cuadrados,
+\begin{align*}
+(\dot x - ny)^2 &= \dot x^2 - 2n y\dot x + n^2 y^2,\\
+(\dot y + nx)^2 &= \dot y^2 + 2n x\dot y + n^2 x^2,
+\end{align*}
+y sumando,
+\[
+T = \underbrace{\tfrac12(\dot x^2+\dot y^2+\dot z^2)}_{T_2}
+  + \underbrace{n(x\dot y - y\dot x)}_{T_1}
+  + \underbrace{\tfrac12 n^2(x^2+y^2)}_{T_0},
+\]
+donde $T_2$, $T_1$ y $T_0$ son de grado 2, 1 y 0 en las velocidades generalizadas.
+
+\section{Lagrangiano}
+
+La energía potencial gravitacional por unidad de masa es
+\[
+V(x,y,z) = -\frac{GM_1}{r_1} - \frac{GM_2}{r_2}.
+\]
+No depende de $t$ porque en el sistema rotante el Sol y Júpiter no se mueven. El lagrangiano
+por unidad de masa, $L = T - V$, es
+\begin{equation}
+L = \frac12\Bigl[(\dot x - n y)^2 + (\dot y + n x)^2 + \dot z^2\Bigr]
+    + \frac{GM_1}{r_1} + \frac{GM_2}{r_2}.
+\label{eq:L}
+\end{equation}
+Se define el potencial efectivo
+\begin{equation}
+\Omega(x,y,z) = \frac12 n^2(x^2+y^2) + \frac{GM_1}{r_1} + \frac{GM_2}{r_2},
+\label{eq:Omega}
+\end{equation}
+que reúne $T_0$ y $-V$. Con él,
+\[
+L = \tfrac12(\dot x^2+\dot y^2+\dot z^2) + n(x\dot y - y\dot x) + \Omega(x,y,z).
+\]
+
+\subsection{Derivadas de $\Omega$}
+
+Se necesitan $\partial r_1/\partial x = (x+\alpha a)/r_1$, $\partial r_1/\partial y = y/r_1$,
+$\partial r_1/\partial z = z/r_1$, y análogas para $r_2$. Como
+$\partial(1/r)/\partial x = -(1/r^2)\,\partial r/\partial x$,
+\begin{align}
+\frac{\partial\Omega}{\partial x} &= n^2 x - \frac{GM_1(x+\alpha a)}{r_1^3} - \frac{GM_2\bigl(x-(1-\alpha)a\bigr)}{r_2^3},
+\label{eq:Ox}\\
+\frac{\partial\Omega}{\partial y} &= n^2 y - \frac{GM_1\, y}{r_1^3} - \frac{GM_2\, y}{r_2^3},
+\label{eq:Oy}\\
+\frac{\partial\Omega}{\partial z} &= - \frac{GM_1\, z}{r_1^3} - \frac{GM_2\, z}{r_2^3}.
+\label{eq:Oz}
+\end{align}
+
+\section{Ecuaciones de Euler--Lagrange}
+
+Para cada coordenada, $\dfrac{d}{dt}\left(\dfrac{\partial L}{\partial \dot q}\right) - \dfrac{\partial L}{\partial q} = 0$.
+
+\paragraph{Coordenada $x$.} En $L$, $\dot x$ aparece en $\tfrac12\dot x^2$ y en $-n y\dot x$;
+$x$ aparece en $n x\dot y$ y dentro de $\Omega$:
+\[
+\frac{\partial L}{\partial \dot x} = \dot x - n y, \qquad
+\frac{d}{dt}\frac{\partial L}{\partial \dot x} = \ddot x - n\dot y, \qquad
+\frac{\partial L}{\partial x} = n\dot y + \frac{\partial\Omega}{\partial x}.
+\]
+Entonces $(\ddot x - n\dot y) - (n\dot y + \partial_x\Omega) = 0$, es decir
+\begin{equation}
+\ddot x - 2n\dot y = \frac{\partial \Omega}{\partial x}.
+\label{eq:x}
+\end{equation}
+
+\paragraph{Coordenada $y$.} $\dot y$ aparece en $\tfrac12\dot y^2$ y en $n x\dot y$; $y$
+aparece en $-n y\dot x$ y en $\Omega$:
+\[
+\frac{\partial L}{\partial \dot y} = \dot y + n x, \qquad
+\frac{d}{dt}\frac{\partial L}{\partial \dot y} = \ddot y + n\dot x, \qquad
+\frac{\partial L}{\partial y} = -n\dot x + \frac{\partial\Omega}{\partial y}.
+\]
+Entonces $(\ddot y + n\dot x) - (-n\dot x + \partial_y\Omega) = 0$:
+\begin{equation}
+\ddot y + 2n\dot x = \frac{\partial \Omega}{\partial y}.
+\label{eq:y}
+\end{equation}
+
+\paragraph{Coordenada $z$.} $\dot z$ solo aparece en $\tfrac12\dot z^2$ y $z$ solo en $\Omega$:
+\[
+\frac{\partial L}{\partial \dot z} = \dot z, \qquad
+\frac{d}{dt}\frac{\partial L}{\partial \dot z} = \ddot z, \qquad
+\frac{\partial L}{\partial z} = \frac{\partial\Omega}{\partial z},
+\]
+\begin{equation}
+\ddot z = \frac{\partial \Omega}{\partial z}.
+\label{eq:z}
+\end{equation}
+
+\paragraph{Ecuaciones explícitas.} Con \eqref{eq:Ox}--\eqref{eq:Oz}:
+\begin{align*}
+\ddot x &= 2n\dot y + n^2 x - \frac{GM_1(x+\alpha a)}{r_1^3} - \frac{GM_2\bigl(x-(1-\alpha)a\bigr)}{r_2^3},\\
+\ddot y &= -2n\dot x + n^2 y - \frac{GM_1\, y}{r_1^3} - \frac{GM_2\, y}{r_2^3},\\
+\ddot z &= - \frac{GM_1\, z}{r_1^3} - \frac{GM_2\, z}{r_2^3}.
+\end{align*}
+Estas son las ecuaciones que se integran en la verificación numérica de la sección 10 y en
+una de las pruebas automáticas. El Modelo~2 integra las ecuaciones equivalentes en el sistema
+inercial.
+
+\paragraph{Interpretación.} Con $\vec\omega = (0,0,n)$ y $\dot{\vec r} = (\dot x,\dot y,\dot z)$:
+\[
+-2\vec\omega\times\dot{\vec r} = -2(0,0,n)\times(\dot x,\dot y,\dot z) = (2n\dot y,\; -2n\dot x,\; 0),
+\]
+\[
+\vec\omega\times\vec r = (-ny,\, nx,\, 0), \qquad
+-\vec\omega\times(\vec\omega\times\vec r) = -(0,0,n)\times(-ny,\,nx,\,0) = (n^2 x,\; n^2 y,\; 0).
+\]
+Por tanto las ecuaciones anteriores son, en forma vectorial,
+\[
+\ddot{\vec r} = -\nabla V \;\underbrace{-\,2\vec\omega\times\dot{\vec r}}_{\text{Coriolis}}
+\;\underbrace{-\,\vec\omega\times(\vec\omega\times\vec r)}_{\text{centrífuga}} .
+\]
+Son las fuerzas ficticias de un sistema rotante; el formalismo lagrangiano las produce sin
+introducirlas a mano.
+
+\section{Simetrías y cantidades conservadas}
+
+\subsection{Teorema de la función de energía}
+
+Para un lagrangiano $L(q,\dot q,t)$ se define
+$h = \sum_k \dot q_k\,\partial L/\partial \dot q_k - L$. Su derivada es
+\begin{align*}
+\frac{dh}{dt} &= \sum_k\left[\ddot q_k\frac{\partial L}{\partial \dot q_k}
+  + \dot q_k\frac{d}{dt}\frac{\partial L}{\partial \dot q_k}\right]
+  - \left[\sum_k\left(\frac{\partial L}{\partial q_k}\dot q_k
+  + \frac{\partial L}{\partial \dot q_k}\ddot q_k\right) + \frac{\partial L}{\partial t}\right]\\
+&= \sum_k \dot q_k\left[\frac{d}{dt}\frac{\partial L}{\partial \dot q_k} - \frac{\partial L}{\partial q_k}\right]
+  - \frac{\partial L}{\partial t}.
+\end{align*}
+Los términos con $\ddot q_k$ se cancelan, y el corchete es cero por las ecuaciones de
+Euler--Lagrange. Queda
+\[
+\frac{dh}{dt} = -\frac{\partial L}{\partial t}.
+\]
+En el sistema rotante, $L$ en~\eqref{eq:L} no contiene $t$ explícitamente:
+$\partial L/\partial t = 0$, y por tanto \textbf{$h$ se conserva}. Es la consecuencia de la
+simetría ante traslaciones en el tiempo del sistema rotante.
+
+\subsection{Cálculo de $h$}
+
+Con los momentos generalizados de la sección anterior,
+\begin{align*}
+\sum_k \dot q_k \frac{\partial L}{\partial \dot q_k}
+&= \dot x(\dot x - n y) + \dot y(\dot y + n x) + \dot z\,\dot z\\
+&= (\dot x^2+\dot y^2+\dot z^2) + n(x\dot y - y\dot x) = 2T_2 + T_1 .
+\end{align*}
+Este resultado es el teorema de Euler para funciones homogéneas: un término de grado $k$ en
+las velocidades contribuye $k$ veces a sí mismo ($2T_2$, $1\cdot T_1$, $0\cdot T_0$). Restando
+$L = T_2 + T_1 + T_0 - V = T_2 + T_1 + \Omega$:
+\[
+h = 2T_2 + T_1 - (T_2 + T_1 + \Omega) = T_2 - \Omega .
+\]
+El término lineal $T_1$ se cancela:
+\begin{equation}
+h = \frac12\left(\dot x^2+\dot y^2+\dot z^2\right) - \frac12 n^2(x^2+y^2) - \frac{GM_1}{r_1} - \frac{GM_2}{r_2}.
+\label{eq:h}
+\end{equation}
+Tradicionalmente se usa la constante de Jacobi $C_J = -2h$:
+\begin{equation}
+C_J = n^2(x^2+y^2) + \frac{2GM_1}{r_1} + \frac{2GM_2}{r_2} - \left(\dot x^2+\dot y^2+\dot z^2\right).
+\label{eq:CJ}
+\end{equation}
+
+\subsection{Comprobación directa con las ecuaciones de movimiento}
+
+Multiplicando~\eqref{eq:x} por $\dot x$, \eqref{eq:y} por $\dot y$ y \eqref{eq:z} por $\dot z$:
+\begin{align*}
+\dot x\ddot x - 2n\dot x\dot y &= \dot x\,\partial_x\Omega,\\
+\dot y\ddot y + 2n\dot x\dot y &= \dot y\,\partial_y\Omega,\\
+\dot z\ddot z &= \dot z\,\partial_z\Omega .
+\end{align*}
+Al sumar, los términos de Coriolis se cancelan. A la izquierda queda
+$\frac{d}{dt}\left[\tfrac12(\dot x^2+\dot y^2+\dot z^2)\right]$ y a la derecha, por la regla de
+la cadena y porque $\Omega$ no depende de $t$, $\frac{d\Omega}{dt}$. Por tanto
+\[
+\frac{d}{dt}\left[\tfrac12(\dot x^2+\dot y^2+\dot z^2) - \Omega\right] = \frac{dh}{dt} = 0 .
+\]
+La fuerza de Coriolis no aparece porque es perpendicular a $\dot{\vec r}$ y no hace trabajo.
+
+\subsection{Significado de $h$ en el sistema inercial}
+
+Sean $E = \tfrac12|\vec v_{\mathrm{in}}|^2 + V$ la energía de la sonda medida en el sistema
+inercial y $\ell_z = (\vec r\times\vec v_{\mathrm{in}})_z$ su momento angular respecto al eje
+$z$ (el mismo eje en ambos sistemas). Con
+$\vec v_{\mathrm{in}} = (\dot x - ny,\; \dot y + nx,\; \dot z)$:
+\begin{align*}
+E &= T + V = \tfrac12(\dot x^2+\dot y^2+\dot z^2) + n(x\dot y - y\dot x) + \tfrac12 n^2(x^2+y^2) + V,\\
+\ell_z &= x(\dot y + n x) - y(\dot x - n y) = (x\dot y - y\dot x) + n(x^2+y^2),\\
+n\,\ell_z &= n(x\dot y - y\dot x) + n^2(x^2+y^2).
+\end{align*}
+Restando término a término:
+\[
+E - n\ell_z = \tfrac12(\dot x^2+\dot y^2+\dot z^2)
++ \bigl[n(x\dot y - y\dot x) - n(x\dot y - y\dot x)\bigr]
++ \bigl[\tfrac12 n^2(x^2+y^2) - n^2(x^2+y^2)\bigr] + V,
+\]
+\[
+E - n\ell_z = \tfrac12(\dot x^2+\dot y^2+\dot z^2) - \tfrac12 n^2(x^2+y^2) + V = h .
+\]
+Es decir,
+\begin{equation}
+\boxed{\,h = E - n\,\ell_z = \text{constante}\,}
+\label{eq:Enl}
+\end{equation}
+
+\subsection{Por qué $E$ y $\ell_z$ no se conservan por separado}
+
+Se puede llegar a~\eqref{eq:Enl} de forma independiente, trabajando en el sistema inercial con
+coordenadas cilíndricas $(\rho,\varphi,Z)$. Como el Sol y Júpiter giran con velocidad angular
+$n$, el potencial que siente la sonda depende de $\varphi$ y de $t$ solo a través de la
+combinación $\varphi - nt$:
+\[
+V = V(\rho,\, \varphi - nt,\, Z)
+\quad\Longrightarrow\quad
+\frac{\partial V}{\partial t} = -n\,\frac{\partial V}{\partial\varphi}.
+\]
+El lagrangiano inercial es $L_{\mathrm{in}} = \tfrac12(\dot\rho^2 + \rho^2\dot\varphi^2 + \dot Z^2) - V$.
+\begin{itemize}
+\item \textbf{Energía.} Por el teorema de la sección 5.1 aplicado a $L_{\mathrm{in}}$ (cuya $h$
+es $E$, porque $T$ es puramente cuadrática):
+$\dfrac{dE}{dt} = -\dfrac{\partial L_{\mathrm{in}}}{\partial t} = \dfrac{\partial V}{\partial t} \neq 0$.
+La energía no se conserva porque el potencial cambia en el tiempo.
+\item \textbf{Momento angular.} El momento conjugado de $\varphi$ es
+$p_\varphi = \rho^2\dot\varphi = \ell_z$, y la ecuación de Euler--Lagrange para $\varphi$ da
+$\dfrac{d\ell_z}{dt} = \dfrac{\partial L_{\mathrm{in}}}{\partial\varphi} = -\dfrac{\partial V}{\partial \varphi} \neq 0$.
+No se conserva porque el potencial no es simétrico ante rotaciones.
+\end{itemize}
+Combinando las dos con la relación de arriba:
+\[
+\frac{dE}{dt} = \frac{\partial V}{\partial t} = -n\frac{\partial V}{\partial\varphi} = n\,\frac{d\ell_z}{dt}
+\quad\Longrightarrow\quad
+\frac{d}{dt}\left(E - n\ell_z\right) = 0 .
+\]
+Ninguna de las dos simetrías existe por separado, pero sí la simetría combinada: trasladar el
+tiempo en $\Delta t$ y rotar en $n\Delta t$ deja el potencial igual. Por el teorema de Noether
+esa simetría da la cantidad conservada $E - n\ell_z$, que coincide con~\eqref{eq:Enl}.
+
+Consecuencia para el sobrevuelo: entre un instante antes y uno después del encuentro,
+\begin{equation}
+\Delta E = n\,\Delta \ell_z .
+\label{eq:DeltaE}
+\end{equation}
+Si la sonda gana energía heliocéntrica, gana también momento angular, en la proporción fija
+$n$; ambas cantidades las pierde Júpiter.
+
+\subsection{Si la órbita de Júpiter no es circular}
+
+La conservación de $h$ depende de la suposición 2. La órbita real de Júpiter tiene
+excentricidad $0.048$: su distancia al Sol y su velocidad angular cambian con el tiempo, no
+existe un sistema rotante en el que el Sol y Júpiter estén quietos y $h$ deja de ser
+constante. Conviene saber qué queda de~\eqref{eq:DeltaE}, porque es lo que se compara con
+los datos reales.
+
+En el sistema inercial, sean $\vec R_i(t)$ y $\vec V_i = \dot{\vec R}_i$ la posición y la
+velocidad de cada cuerpo ($i = 1$ el Sol, $i = 2$ Júpiter) respecto al centro de masa. El
+potencial es $V = V_1 + V_2$ con $V_i = -GM_i/|\vec r - \vec R_i(t)|$, y depende del tiempo solo
+a través de $\vec R_i(t)$. Como $V_i$ depende de la diferencia $\vec r - \vec R_i$, se cumple
+$\nabla_{\vec R_i}V_i = -\nabla_{\vec r}V_i$, y por la regla de la cadena
+\[
+\frac{\partial V}{\partial t} = \sum_i \nabla_{\vec R_i}V_i\cdot\vec V_i
+= -\sum_i \nabla_{\vec r}V_i\cdot\vec V_i = \sum_i \vec a_i\cdot\vec V_i ,
+\]
+donde $\vec a_i = -\nabla_{\vec r}V_i$ es la aceleración que el cuerpo $i$ le da a la sonda. Con
+$dE/dt = \partial V/\partial t$ (el primer punto de la subsección anterior, que no usa la
+órbita circular):
+\begin{equation}
+\frac{dE}{dt} = \vec a_1\cdot\vec V_1 + \vec a_2\cdot\vec V_2 .
+\label{eq:potencia}
+\end{equation}
+La energía de la sonda cambia según lo que la acelera cada cuerpo \emph{en la dirección en que
+ese cuerpo se mueve}; un cuerpo quieto no la cambia.
+
+Para el momento angular, $d\vec\ell/dt = \vec r\times(\vec a_1 + \vec a_2)$. Como $\vec a_i$ es
+paralela a $\vec R_i - \vec r$, $(\vec r - \vec R_i)\times\vec a_i = 0$ y por tanto
+$\vec r\times\vec a_i = \vec R_i\times\vec a_i$:
+\[
+\frac{d\ell_z}{dt} = \sum_i \hat z\cdot(\vec R_i\times\vec a_i).
+\]
+Ahora se descompone la velocidad de cada cuerpo en una parte de giro y una radial. Si la recta
+Sol--Júpiter gira con velocidad angular instantánea $\omega(t)$ y $R_i$ cambia a razón
+$\dot R_i$,
+\[
+\vec V_i = \omega\,\hat z\times\vec R_i + \dot R_i\,\hat R_i .
+\]
+Sustituyendo en~\eqref{eq:potencia} y usando la identidad del producto mixto
+$\vec a\cdot(\hat z\times\vec R) = \hat z\cdot(\vec R\times\vec a)$:
+\begin{equation}
+\frac{dE}{dt} = \omega(t)\sum_i \hat z\cdot(\vec R_i\times\vec a_i) + \sum_i \dot R_i\,(\vec a_i\cdot\hat R_i)
+= \omega(t)\,\frac{d\ell_z}{dt} + \sum_i \dot R_i\,(\vec a_i\cdot\hat R_i).
+\label{eq:excentrica}
+\end{equation}
+\begin{itemize}
+\item Órbita circular: $\omega = n$ y $\dot R_i = 0$. Se recupera $dE/dt = n\,d\ell_z/dt$, es
+decir~\eqref{eq:DeltaE}.
+\item Órbita excéntrica: integrando,
+$\Delta E = \int\omega\,d\ell_z + \int\sum_i \dot R_i(\vec a_i\cdot\hat R_i)\,dt$. El intercambio
+ocurre casi todo cerca del periapsis, de modo que $\Delta E \approx \omega_p\,\Delta\ell_z$ con
+$\omega_p$ la velocidad angular de Júpiter \emph{en el momento del encuentro}, más una corrección
+por su velocidad radial.
+\end{itemize}
+Por la segunda ley de Kepler, $\omega = \ell_{\mathrm J}/R^2 = n\sqrt{1-e_{\mathrm J}^2}\,(a/R)^2$,
+con $R$ la distancia Sol--Júpiter. Para Júpiter varía entre $0.91\,n$ en el afelio y $1.10\,n$ en
+el perihelio: usar el movimiento medio $n$ en~\eqref{eq:DeltaE} puede dar un error de hasta el
+$10\,\%$ con datos reales. Lo mismo le pasa al parámetro de Tisserand de la sección 8, que se
+deduce de $h$ con el $n$ medio.
+
+\section{Formulación hamiltoniana}
+
+\paragraph{Momentos canónicos.}
+\[
+p_x = \frac{\partial L}{\partial\dot x} = \dot x - n y, \qquad
+p_y = \frac{\partial L}{\partial\dot y} = \dot y + n x, \qquad
+p_z = \frac{\partial L}{\partial\dot z} = \dot z .
+\]
+Son las componentes de la velocidad inercial, no de $\dot{\vec r}$. Despejando las velocidades:
+$\dot x = p_x + n y$, $\dot y = p_y - n x$, $\dot z = p_z$.
+
+\paragraph{Transformada de Legendre.} $H = p_x\dot x + p_y\dot y + p_z\dot z - L$. Con las
+velocidades despejadas,
+\begin{align*}
+p_x\dot x + p_y\dot y + p_z\dot z &= p_x(p_x + n y) + p_y(p_y - n x) + p_z^2
+= p_x^2 + p_y^2 + p_z^2 - n(x p_y - y p_x),\\
+L &= \tfrac12\left(p_x^2 + p_y^2 + p_z^2\right) - V,
+\end{align*}
+porque los paréntesis de~\eqref{eq:L} son justamente $p_x$ y $p_y$. Restando,
+\begin{equation}
+H = \frac12\left(p_x^2+p_y^2+p_z^2\right) - n\,(x p_y - y p_x) + V(x,y,z).
+\label{eq:H}
+\end{equation}
+Como $\tfrac12 p^2 + V = E$ y $x p_y - y p_x = \ell_z$, se tiene $H = E - n\ell_z = h$: el
+hamiltoniano es la función de energía de Jacobi.
+
+\paragraph{Ecuaciones de Hamilton.}
+\begin{align*}
+\dot x &= \frac{\partial H}{\partial p_x} = p_x + n y, &
+\dot p_x &= -\frac{\partial H}{\partial x} = n p_y - \frac{\partial V}{\partial x},\\
+\dot y &= \frac{\partial H}{\partial p_y} = p_y - n x, &
+\dot p_y &= -\frac{\partial H}{\partial y} = -n p_x - \frac{\partial V}{\partial y},\\
+\dot z &= \frac{\partial H}{\partial p_z} = p_z, &
+\dot p_z &= -\frac{\partial H}{\partial z} = - \frac{\partial V}{\partial z}.
+\end{align*}
+Comprobación con $x$: derivando $\dot x = p_x + n y$,
+$\ddot x = \dot p_x + n\dot y = n p_y - \partial_x V + n\dot y$. Como $p_y = \dot y + n x$,
+\[
+\ddot x = n(\dot y + n x) - \partial_x V + n\dot y = 2n\dot y + n^2 x - \partial_x V
+= 2n\dot y + \partial_x\Omega,
+\]
+que es~\eqref{eq:x}. Para $y$: $\ddot y = \dot p_y - n\dot x = -n(\dot x - ny) - \partial_y V - n\dot x
+= -2n\dot x + \partial_y\Omega$, que es~\eqref{eq:y}. Para $z$ es inmediato. Como
+$\partial H/\partial t = 0$, $dH/dt = 0$.
+
+\section{El sistema de Júpiter}
+
+\subsection{Ecuación de movimiento relativa a Júpiter}
+
+En un sistema inercial, las aceleraciones de la sonda ($\vec r$) y de Júpiter ($\vec r_{\mathrm J}$)
+son
+\[
+\ddot{\vec r} = -\frac{GM_2(\vec r - \vec r_{\mathrm J})}{|\vec r - \vec r_{\mathrm J}|^3}
+               - \frac{GM_1(\vec r - \vec r_\odot)}{|\vec r - \vec r_\odot|^3},
+\qquad
+\ddot{\vec r}_{\mathrm J} = -\frac{GM_1(\vec r_{\mathrm J} - \vec r_\odot)}{|\vec r_{\mathrm J} - \vec r_\odot|^3}.
+\]
+Sea $\vec\rho = \vec r - \vec r_{\mathrm J}$ la posición de la sonda vista desde Júpiter y
+$\vec d = \vec r_\odot - \vec r_{\mathrm J}$ la del Sol vista desde Júpiter. Entonces
+$\vec r - \vec r_\odot = \vec\rho - \vec d$ y $\vec r_{\mathrm J} - \vec r_\odot = -\vec d$.
+Restando las dos ecuaciones:
+\begin{equation}
+\ddot{\vec\rho} = -\frac{GM_2\,\vec\rho}{\rho^3}
+\;\underbrace{-\,GM_1\left[\frac{\vec\rho - \vec d}{|\vec\rho - \vec d|^3} + \frac{\vec d}{d^3}\right]}_{\vec f_\odot}.
+\label{eq:jov}
+\end{equation}
+El término $\vec f_\odot$ es la perturbación del Sol: la diferencia entre lo que el Sol acelera a
+la sonda y lo que acelera a Júpiter. El sumando $\vec d/d^3$ aparece porque el sistema de
+Júpiter está acelerado (no es inercial).
+
+\subsection{Tamaño de la perturbación (efecto de marea)}
+
+Para $\rho\ll d$ se expande $|\vec\rho-\vec d|^{-3}$ a primer orden en $\rho/d$. Con
+$\hat d = \vec d/d$,
+\[
+|\vec\rho - \vec d|^2 = d^2 - 2\vec\rho\cdot\vec d + \rho^2
+\;\Longrightarrow\;
+|\vec\rho - \vec d|^{-3} \approx d^{-3}\left(1 + \frac{3\,\vec\rho\cdot\hat d}{d}\right).
+\]
+Sustituyendo y conservando términos de primer orden:
+\[
+\frac{\vec\rho - \vec d}{|\vec\rho - \vec d|^3} \approx \frac{\vec\rho}{d^3} - \frac{\vec d}{d^3}
+- \frac{3(\vec\rho\cdot\hat d)\,\hat d}{d^3},
+\qquad
+\vec f_\odot \approx -\frac{GM_1}{d^3}\Bigl[\vec\rho - 3(\vec\rho\cdot\hat d)\,\hat d\Bigr].
+\]
+El término de orden cero ($\vec d/d^3$) se cancela exactamente: la atracción ``media'' del Sol
+no afecta el movimiento relativo. Lo que queda es la marea, de tamaño
+$|\vec f_\odot| \sim GM_1\rho/d^3$.
+
+\subsection{Radio de la esfera de influencia (criterio de Laplace)}
+
+Laplace compara, en cada sistema, el cociente entre la perturbación y la atracción principal:
+\begin{itemize}
+\item Sistema de Júpiter: principal $GM_2/\rho^2$; perturbación del Sol $\sim GM_1\rho/d^3$.
+Cociente: $Q_{\mathrm J} = \dfrac{M_1}{M_2}\dfrac{\rho^3}{d^3}$.
+\item Sistema del Sol: principal $GM_1/d^2$ (la sonda está a $\approx d$ del Sol);
+perturbación de Júpiter $\sim GM_2/\rho^2$. Cociente: $Q_\odot = \dfrac{M_2}{M_1}\dfrac{d^2}{\rho^2}$.
+\end{itemize}
+La frontera es donde ambos cocientes son iguales:
+\[
+\frac{M_1}{M_2}\frac{\rho^3}{d^3} = \frac{M_2}{M_1}\frac{d^2}{\rho^2}
+\;\Longrightarrow\;
+\rho^5 = \left(\frac{M_2}{M_1}\right)^2 d^5
+\;\Longrightarrow\;
+r_{\mathrm{SOI}} = d\left(\frac{M_2}{M_1}\right)^{2/5}.
+\]
+Dentro de esa esfera conviene tomar a Júpiter como cuerpo principal. Este cálculo omite
+factores numéricos de orden uno; por eso otros criterios (por ejemplo el de Hill,
+$a\,(M_2/3M_1)^{1/3}$) dan radios algo distintos. La elección es una hipótesis del modelo
+(H3 en la hoja de hipótesis).
+
+\subsection{Conservación aproximada y geometría del sobrevuelo}
+
+Si se desprecia $\vec f_\odot$, \eqref{eq:jov} es un problema de dos cuerpos con potencial
+central $-GM_2/\rho$. Su lagrangiano $\tfrac12\dot{\vec\rho}^{\,2} + GM_2/\rho$ no depende del tiempo
+ni de la orientación de $\vec\rho$, de modo que se conservan
+\[
+\varepsilon_{\mathrm J} = \tfrac12\dot\rho^2 - \frac{GM_2}{\rho},
+\qquad
+\vec\ell_{\mathrm J} = \vec\rho\times\dot{\vec\rho}.
+\]
+Con $\varepsilon_{\mathrm J} > 0$ la órbita es una hipérbola.
+\begin{itemize}
+\item \textbf{Igualdad de $v_\infty$.} Lejos de Júpiter ($\rho\to\infty$),
+$\varepsilon_{\mathrm J} = \tfrac12 v_\infty^2$. Como $\varepsilon_{\mathrm J}$ es la misma a la
+entrada y a la salida, $|\vec v_{\infty,\mathrm{ent}}| = |\vec v_{\infty,\mathrm{sal}}|$.
+\item \textbf{Excentricidad.} En el periapsis $r_p$ la velocidad es perpendicular al radio, así
+que $\ell_{\mathrm J} = r_p v_p$, y la energía da $v_p^2 = v_\infty^2 + 2GM_2/r_p$. La ecuación de la
+órbita $\rho = \dfrac{\ell^2/GM_2}{1+e\cos f}$ evaluada en $f = 0$ da
+$r_p = \dfrac{\ell^2}{GM_2(1+e)}$, de donde
+\[
+e = \frac{\ell^2}{GM_2\, r_p} - 1 = \frac{r_p v_p^2}{GM_2} - 1
+= \frac{r_p}{GM_2}\left(v_\infty^2 + \frac{2GM_2}{r_p}\right) - 1
+= 1 + \frac{r_p v_\infty^2}{GM_2}.
+\]
+\item \textbf{Ángulo de giro.} Las asíntotas corresponden a $\rho\to\infty$, es decir
+$1 + e\cos f_\infty = 0$, $\cos f_\infty = -1/e$. La velocidad de entrada es paralela a la
+asíntota $f = -f_\infty$ y la de salida a $f = +f_\infty$; el ángulo entre ellas es
+$\delta = 2f_\infty - \pi$. Entonces
+\[
+\sin\frac{\delta}{2} = \sin\left(f_\infty - \frac{\pi}{2}\right) = -\cos f_\infty = \frac1e .
+\]
+\item \textbf{Cambio de velocidad.} Los dos vectores tienen la misma magnitud $v_\infty$ y forman
+un ángulo $\delta$, así que $|\Delta\vec v| = |\vec v_{\infty,\mathrm{sal}} - \vec v_{\infty,\mathrm{ent}}|
+= \sqrt{2v_\infty^2(1-\cos\delta)} = 2v_\infty\sin(\delta/2)$.
+\end{itemize}
+
+\subsection{Cambio de energía heliocéntrica y coherencia con Jacobi}
+
+Si durante el encuentro la velocidad de Júpiter $\vec v_{\mathrm J}$ no cambia
+apreciablemente, la velocidad heliocéntrica de la sonda es $\vec v = \vec v_{\mathrm J} + \vec v_\infty$
+antes y después, y en el mismo punto (el encuentro es corto) la energía potencial no cambia:
+\[
+\Delta E = \tfrac12|\vec v_{\mathrm J} + \vec v_{\infty,\mathrm{sal}}|^2 - \tfrac12|\vec v_{\mathrm J} + \vec v_{\infty,\mathrm{ent}}|^2
+= \vec v_{\mathrm J}\cdot(\vec v_{\infty,\mathrm{sal}} - \vec v_{\infty,\mathrm{ent}})
++ \tfrac12\left(v_{\infty,\mathrm{sal}}^2 - v_{\infty,\mathrm{ent}}^2\right).
+\]
+El último término es cero por la igualdad de $v_\infty$, así que
+$\Delta E = \vec v_{\mathrm J}\cdot\Delta\vec v$.
+
+Comprobación con~\eqref{eq:DeltaE}: el encuentro ocurre en $\vec r \approx \vec r_{\mathrm J}$, de modo
+que $\Delta\ell_z = (\vec r_{\mathrm J}\times\Delta\vec v)_z = a\,\Delta v_t$, donde $\Delta v_t$ es la
+componente de $\Delta\vec v$ en la dirección del movimiento de Júpiter. Como $v_{\mathrm J} = n a$ y
+$\vec v_{\mathrm J}$ es tangencial,
+$n\,\Delta\ell_z = n a\,\Delta v_t = v_{\mathrm J}\,\Delta v_t = \vec v_{\mathrm J}\cdot\Delta\vec v = \Delta E$.
+Los dos caminos dan el mismo resultado.
+
+\section{Límite lejano: el parámetro de Tisserand}
+
+Lejos de Júpiter ($GM_2/r_2$ despreciable) y con $\alpha\to 0$ (Sol en el origen), la sonda sigue una
+cónica heliocéntrica de semieje $a_s$, excentricidad $e$ e inclinación $i$ respecto al plano de
+la órbita de Júpiter. Para esa cónica:
+\begin{itemize}
+\item Energía: $E = -\dfrac{GM_1}{2a_s}$ (ecuación de vis-viva).
+\item Momento angular: el semilatus rectum es $p = \ell^2/GM_1 = a_s(1-e^2)$, así que
+$\ell = \sqrt{GM_1 a_s(1-e^2)}$, y su componente $z$ es $\ell_z = \ell\cos i$.
+\item Velocidad angular de Júpiter con $\alpha\to 0$: $n = \sqrt{GM_1/a^3}$.
+\end{itemize}
+Sustituyendo en $h = E - n\ell_z$:
+\[
+h = -\frac{GM_1}{2a_s} - \sqrt{\frac{GM_1}{a^3}}\sqrt{GM_1 a_s(1-e^2)}\,\cos i
+  = -\frac{GM_1}{2a_s} - \frac{GM_1}{a}\sqrt{\frac{a_s}{a}(1-e^2)}\,\cos i .
+\]
+Multiplicando por $-2a/GM_1$:
+\begin{equation}
+T_{\mathrm J} \equiv -\frac{2a}{GM_1}\,h = \frac{a}{a_s} + 2\cos i\,\sqrt{\frac{a_s}{a}\left(1-e^2\right)}
+\approx \text{constante}.
+\label{eq:T_J}
+\end{equation}
+Es el parámetro de Tisserand. Es una aproximación de $C_J$ con tres hipótesis adicionales:
+órbita circular de Júpiter, $\alpha\to 0$ y sonda lejos de Júpiter.
+
+\section{Resumen: qué se conserva en cada sistema}
+
+\begin{center}
+\small
+\begin{tabular}{>{\raggedright}p{3.3cm}>{\raggedright}p{4.4cm}>{\raggedright\arraybackslash}p{6.2cm}}
+\toprule
+Sistema & Simetría del lagrangiano & Cantidad conservada \\
+\midrule
+Heliocéntrico (inercial) & Ni temporal ni rotacional por separado; sí la combinada ($t\to t+\Delta t$, $\varphi\to\varphi+n\Delta t$) & Ni $E$ ni $\ell_z$ de la sonda. Sí $E-n\ell_z$ \\
+\addlinespace
+Rotante Sol--Júpiter & $\partial L/\partial t = 0$ & $h = E - n\ell_z$, o $C_J = -2h$ (exacta en el problema restringido circular) \\
+\addlinespace
+Jovicéntrico, sin el Sol & $\partial L/\partial t = 0$ y potencial central & $\varepsilon_{\mathrm J}$ y $\vec\ell_{\mathrm J}$, por tanto $|\vec v_\infty|$ (aproximadas: fallan por la marea solar) \\
+\addlinespace
+Heliocéntrico lejos de Júpiter & Límite de $C_J$ & $T_{\mathrm J}$ (aproximada) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Verificación}
+
+\paragraph{Análisis dimensional.} En~\eqref{eq:h}: $[\dot x^2] = $ km$^2$/s$^2$,
+$[n^2x^2] = $ s$^{-2}$km$^2$, $[GM/r] = $ (km$^3$/s$^2$)/km $=$ km$^2$/s$^2$ $\checkmark$.
+En~\eqref{eq:Enl}: $[n\ell_z] = $ s$^{-1}\cdot$km$^2$/s $=$ km$^2$/s$^2$ $\checkmark$. En el radio de
+Laplace, $(M_2/M_1)^{2/5}$ es adimensional $\checkmark$. $T_{\mathrm J}$ es adimensional $\checkmark$.
+
+\paragraph{Límites.}
+(i) Con $M_2\to 0$ y $\alpha\to 0$, \eqref{eq:x}--\eqref{eq:z} son el problema de Kepler escrito
+en un sistema rotante; \eqref{eq:Enl} sigue valiendo porque entonces $E$ y $\ell_z$ se conservan
+por separado.
+(ii) Formalmente, con $n\to 0$ desaparecen Coriolis y centrífuga, se recupera Newton con dos
+cuerpos fijos y $h\to E$.
+(iii) Un cuerpo en la misma órbita circular de Júpiter ($a_s = a$, $e=0$, $i=0$) da
+$T_{\mathrm J} = 1 + 2 = 3$.
+(iv) Con $r_p\to\infty$ o $M_2\to 0$, $e\to\infty$ y $\delta\to 0$: no hay desvío.
+
+\paragraph{Derivación simbólica independiente (sympy).}
+En la carpeta \texttt{scripts}, el programa \texttt{04\_verificar\_lagrangiano.py} construye~\eqref{eq:L} y comprueba
+que: las ecuaciones de Euler--Lagrange coinciden con~\eqref{eq:x}--\eqref{eq:z}; $h$
+es~\eqref{eq:h}; $dh/dt = 0$ al sustituir las ecuaciones de movimiento; $h = E - n\ell_z$; y el
+límite lejano da~\eqref{eq:T_J}. Los cinco resultados son verdaderos.
+
+\paragraph{Integración numérica.} Un sobrevuelo a $10\,R_{\mathrm J}$ con
+$v_\infty \approx 7.6$~km/s, integrado con DOP853 en el sistema rotante durante 240 días: la energía
+$E$ pasa de $-134.09$ a $+21.66$~km$^2$/s$^2$, el momento angular casi se triplica,
+y $h$ varía en $3.7\times10^{-12}$ relativo (error numérico). Además $\Delta E = 155.7509$ y
+$n\Delta\ell_z = 155.7509$~km$^2$/s$^2$, como predice~\eqref{eq:DeltaE}.
+
+\paragraph{Datos reales de Voyager~2.} Con la trayectoria reconstruida (kernel SPICE de NAIF)
+y la efeméride DE421, entre el 4 de junio y el 20 de julio de 1979, y con $E$ y $\ell_z$
+calculados como en la sección 5.4 (energía total, con los potenciales del Sol y de Júpiter;
+momento angular respecto al centro de masa Sol--Júpiter y a lo largo del polo de la órbita de
+Júpiter), en km$^2$/s$^2$:
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+$\Delta E$ de la sonda & $164.20$ \\
+$n\,\Delta\ell_z$ con el movimiento medio de Júpiter & $173.21$ \\
+$\int\omega\,d\ell_z$ con la velocidad angular instantánea & $164.83$ \\
+Término radial de~\eqref{eq:excentrica} & $-0.15$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Con el movimiento medio la relación falla un $5.5\,\%$. La razón es la de la sección 5.6: en
+julio de 1979 Júpiter estaba a $5.33$~UA del Sol, cerca del afelio, y giraba a
+$\omega_p = 0.952\,n$. Con la velocidad angular instantánea la diferencia baja al $0.4\,\%$. Lo
+que falta para cerrar el balance, $164.20 - 164.83 + 0.15 = -0.48$~km$^2$/s$^2$, es el trabajo
+de las fuerzas que no están en $V$: los satélites galileanos, el achatamiento de Júpiter y una
+maniobra de la sonda. El Modelo~2 ampliado da para ellas, de forma independiente, un cambio de
+la energía jovicéntrica de $-0.47$~km$^2$/s$^2$.
+
+Prolongando la trayectoria hasta más de tres radios de la esfera de influencia a cada lado, el
+parámetro de Tisserand pasa de $2.576$ a $2.670$ ($3.6\,\%$): tampoco se conserva, porque se
+deduce de $h$ con el $n$ medio. (Una versión anterior de esta comparación daba $172.42$ frente a
+$173.38$, $0.6\,\%$: omitía el potencial de Júpiter y usaba el $n$ medio, dos errores de
+$5\,\%$ que se compensaban.)
+
+\end{document}

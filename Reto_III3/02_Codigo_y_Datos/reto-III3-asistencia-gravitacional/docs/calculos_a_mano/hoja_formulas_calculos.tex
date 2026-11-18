@@ -1,0 +1,105 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}\setdefaultlanguage{spanish}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}\geometry{letterpaper,margin=2.2cm}
+\usepackage{fancyhdr}\pagestyle{fancy}
+\fancyhf{}\lhead{\small Reto III.3: fórmulas y cálculos}\rhead{\small Poveda y Castillo}\cfoot{\thepage}
+\usepackage{enumitem}\setlist{itemsep=2pt}
+\usepackage[colorlinks=true,linkcolor=blue]{hyperref}
+\newcommand{\vinf}{v_\infty}\newcommand{\RJ}{R_J}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\begin{document}
+{\LARGE\bfseries Hoja de fórmulas y cálculos}\\[2pt]
+Reto III.3. Asistencia gravitacional en Júpiter. Mecánica Clásica 2026-B\\
+\small Para copiar a mano: cada cálculo está paso a paso, con las cifras que usa el informe.
+
+\section*{Constantes (todas de DE421 / IAU)}
+$GM_\odot=1.32712440\times10^{11}$ km$^3$/s$^2$;\quad $GM_J=1.26712765\times10^{8}$ km$^3$/s$^2$ (sistema joviano);\quad $\RJ=71\,492$ km;\quad $a_J=5.202887$ UA $=7.7834\times10^{8}$ km;\quad 1 UA $=1.495979\times10^{8}$ km.
+
+\section{Fórmulas}
+\begin{enumerate}[label=\textbf{F\arabic*.}]
+\item \textbf{Lagrangiano} (por unidad de masa) en el sistema que rota con Júpiter, con velocidad angular $n$, $n^2a^3=G(M_1+M_2)$:
+\[L=\tfrac12\big[(\dot x-ny)^2+(\dot y+nx)^2+\dot z^2\big]+\frac{GM_1}{r_1}+\frac{GM_2}{r_2}.\]
+\item \textbf{Euler–Lagrange:} $\ddot x-2n\dot y=\partial_x\Omega,\ \ddot y+2n\dot x=\partial_y\Omega,\ \ddot z=\partial_z\Omega$, con $\Omega=\tfrac12n^2(x^2+y^2)+GM_1/r_1+GM_2/r_2$. Los términos $\pm2n\dot q$ son Coriolis.
+\item \textbf{Función de energía} ($L$ no depende de $t$): $h=\sum_k\dot q_k\,\partial L/\partial\dot q_k-L=\tfrac12(\dot x^2+\dot y^2+\dot z^2)-\Omega=E-n\ell_z$.
+\item \textbf{Consecuencia:} $\Delta E=n\,\Delta\ell_z$ (exacta si la órbita de Júpiter es circular). Si es excéntrica: $dE/dt=\omega(t)\,d\ell_z/dt+$ término radial, con $\omega=n\sqrt{1-e^2}\,(a/R)^2$.
+\item \textbf{Hipérbola en Júpiter:} $e=1+\dfrac{r_p\vinf^2}{GM_J}$,\qquad $\sin\dfrac\delta2=\dfrac1e$,\qquad $r_p=\dfrac{GM_J}{\vinf^2}\Big(\dfrac1{\sin(\delta/2)}-1\Big)$.
+\item \textbf{Conservación en Júpiter:} $E_J=\tfrac12\vinf^2$ y $\ell_J=r_pv_p$ constantes; $v_p=\sqrt{\vinf^2+2GM_J/r_p}$; $|\vec v_{\infty,ent}|=|\vec v_{\infty,sal}|$.
+\item \textbf{Suma de velocidades (sistema del Sol):} $\vec v=\vec v_J+\vec v_\infty$, de modo que $|\vec v|^2=v_J^2+\vinf^2+2v_J\vinf\cos\theta$.
+\item \textbf{Ganancia heliocéntrica:} $\Delta E=\tfrac12\big(v_{sal}^2-v_{ent}^2\big)$ (el potencial solar es el mismo a la entrada y a la salida del encuentro).
+\item \textbf{Esfera de Laplace:} $r_{SOI}=a\,(M_J/M_\odot)^{2/5}$.\quad \textbf{Hill:} $r_H=a\,(M_J/3M_\odot)^{1/3}$.
+\item \textbf{Tisserand:} $T=\dfrac{a_J}{a}+2\cos i\sqrt{\dfrac{a}{a_J}(1-e^2)}$ (límite lejano de $h$ con el $n$ medio).
+\item \textbf{Lambert} (variable universal $z$): $y(z)=r_1+r_2+A\,\dfrac{zS(z)-1}{\sqrt{C(z)}}$,\ $A=\sin\Delta\theta\sqrt{\dfrac{r_1r_2}{1-\cos\Delta\theta}}$; se busca $z$ tal que $\sqrt\mu\,\Delta t=\Big(\dfrac{y}{C}\Big)^{3/2}S+A\sqrt y$. Luego $f=1-y/r_1$, $g=A\sqrt{y/\mu}$, $\vec v_1=(\vec r_2-f\vec r_1)/g$.
+\item \textbf{Error de las cónicas:} $\epsilon=\dfrac{\Delta E_{cónicas}-\Delta E_{N\,cuerpos}}{\Delta E_{N\,cuerpos}}$.
+\end{enumerate}
+
+\section{Deducción de F3 (sin saltar pasos)}
+Sea $\rho^2=x^2+y^2$, $v_{rot}^2=\dot x^2+\dot y^2+\dot z^2$ y $U=-GM_1/r_1-GM_2/r_2$.
+\begin{enumerate}
+\item Expandir los cuadrados: $\tfrac12[(\dot x-ny)^2+(\dot y+nx)^2]=\tfrac12(\dot x^2+\dot y^2)+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2$. Entonces $L=\tfrac12v_{rot}^2+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2-U$.
+\item Derivadas: $\partial L/\partial\dot x=\dot x-ny$, $\partial L/\partial\dot y=\dot y+nx$, $\partial L/\partial\dot z=\dot z$.
+\item $\sum\dot q\,\partial L/\partial\dot q=\dot x(\dot x-ny)+\dot y(\dot y+nx)+\dot z^2=v_{rot}^2+n(x\dot y-y\dot x)$.
+\item Restar $L$: $h=\tfrac12v_{rot}^2-\tfrac12n^2\rho^2+U=\tfrac12v_{rot}^2-\Omega$.
+\item Pasar al sistema inercial: $\vec v=(\dot x-ny,\ \dot y+nx,\ \dot z)$, entonces $\tfrac12v^2=\tfrac12v_{rot}^2+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2$, de modo que $E=\tfrac12v^2+U$.
+\item Momento angular: $\ell_z=x(\dot y+nx)-y(\dot x-ny)=(x\dot y-y\dot x)+n\rho^2$.
+\item Combinar: $E-n\ell_z=\tfrac12v_{rot}^2+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2+U-n(x\dot y-y\dot x)-n^2\rho^2=\tfrac12v_{rot}^2-\tfrac12n^2\rho^2+U=h$. $\blacksquare$
+\end{enumerate}
+Como $h$ es constante, $\Delta E=n\,\Delta\ell_z$.
+
+\section{Cálculos numéricos}
+
+\subsection*{C1. Esferas de influencia (F9)}
+$M_J/M_\odot=GM_J/GM_\odot=1.26712765\times10^{8}/1.32712440\times10^{11}=9.5479\times10^{-4}$.\\
+Laplace: $(9.5479\times10^{-4})^{0.4}=e^{0.4\ln(9.5479\times10^{-4})}=e^{0.4(-6.9535)}=e^{-2.7814}=0.06193$.\\
+$r_{SOI}=7.7834\times10^{8}\times0.06193=4.820\times10^{7}$ km $=4.820\times10^7/71492=\mathbf{674\ R_J}$.\\
+Hill: $(9.5479\times10^{-4}/3)^{1/3}=(3.1826\times10^{-4})^{1/3}=0.06829$; $r_H=7.7834\times10^8\times0.06829=5.315\times10^7$ km $=\mathbf{743\ R_J}$.
+
+\subsection*{C2. Hipérbola del sobrevuelo óptimo (F5, F6)}
+Datos: $\vinf=9.84$ km/s, $r_p=5.96\,R_J=5.96\times71492=4.2609\times10^5$ km.\\
+$r_p\vinf^2/GM_J=4.2609\times10^5\times96.826/1.26712765\times10^8=4.1257\times10^7/1.26713\times10^8=0.32559$.\\
+$e=1+0.32559=\mathbf{1.3256}$.\quad $\sin(\delta/2)=1/1.3256=0.75437\Rightarrow\delta/2=48.97^\circ\Rightarrow\delta=\mathbf{97.9^\circ}$.\\
+Rapidez en el periapsis: $v_p=\sqrt{96.826+2(1.26712765\times10^8)/4.2609\times10^5}=\sqrt{96.826+594.8}=26.3$ km/s.
+
+\subsection*{C3. Ganancia de energía en el sistema del Sol (F7, F8)}
+Ejemplo ilustrativo (datos elegidos, no del barrido): $v_J=13.058$ km/s (órbita circular), $\vinf=9.84$ km/s, ángulo de llegada $\theta_{ent}=120^\circ$ entre $\vec v_J$ y $\vec v_\infty$, giro $\delta=97.94^\circ$.\\
+Llegada: $v_{ent}^2=13.058^2+9.84^2+2(13.058)(9.84)\cos120^\circ=170.51+96.83-128.49=138.85\Rightarrow v_{ent}=11.78$ km/s.\\
+Salida: $\theta_{sal}=120^\circ-97.94^\circ=22.06^\circ$, $\cos22.06^\circ=0.9268$.\\
+$v_{sal}^2=170.51+96.83+256.98(0.9268)=267.34+238.17=505.5\Rightarrow v_{sal}=\mathbf{22.48}$ km/s.\\
+$\Delta E=\tfrac12(505.5-138.85)=\mathbf{183.3}$ km$^2$/s$^2$ (por unidad de masa).\\
+Idea: $|\vec v_\infty|$ no cambia, solo gira; al quedar más alineado con $\vec v_J$ la rapidez heliocéntrica casi se duplica.
+
+\subsection*{C4. Periapsis requerido para Voyager 2 (F5)}
+Datos del Modelo 1 con DE421 en las fechas reales (\texttt{voyager2.json}): $\delta=96.82^\circ$, $\vinf$ de entrada $7.889$ y de salida $7.791$ km/s, media $7.840$ km/s.\\
+$\sin(48.4^\circ)=0.7478\Rightarrow1/0.7478=1.3372$, y $1.3372-1=0.3372$.\\
+$r_p=1.26712765\times10^8\times0.3372/7.84^2=4.2730\times10^7/61.47=6.951\times10^5$ km $=\mathbf{9.72\ R_J}$ (real: $10.09\,R_J$; error $3.7\,\%$).
+
+\subsection*{C5. Giro máximo previsto antes de simular (F5)}
+Con $r_p=2\,R_J=1.43\times10^5$ km y $\vinf=8$ km/s: $r_p\vinf^2/GM_J=1.43\times10^5\times64/1.26713\times10^8=0.0722$.\\
+$e=1.0722$, $\sin(\delta/2)=1/1.0722=0.9327$, $\delta/2=68.85^\circ$, $\delta=\mathbf{137.7^\circ}\approx138^\circ$.
+
+\subsection*{C6. Voyager 2 con datos reales: ¿se cumple $\Delta E=n\Delta\ell_z$? (F4)}
+Resultados medidos (kernel SPICE, 4 jun–20 jul 1979): $\Delta E=164.2$ km$^2$/s$^2$.\\
+Con el $n$ medio de Júpiter: $n\,\Delta\ell_z=173.2$. Error: $(173.2-164.2)/164.2=0.0548=\mathbf{5.5\,\%}$.\\
+Con la velocidad angular instantánea: $\int\omega\,d\ell_z=164.8$. Error: $(164.8-164.2)/164.2=0.0037=\mathbf{0.4\,\%}$.\\
+Por qué: Júpiter estaba a $R=5.33$ UA ($a=5.203$ UA, $e=0.048$), así que $\omega/n=\sqrt{1-e^2}\,(a/R)^2=0.9988\times(5.203/5.33)^2=0.9988\times0.9529=0.952$, el valor guardado en \texttt{voyager2.json} es $0.9517$.\\
+Comprobación: $173.2\times0.952=164.9\approx164.8$ (el producto no es exacto porque $\omega$ varía a lo largo del encuentro).
+
+\subsection*{C7. Energía de Voyager 2 antes y después}
+En los extremos del registro (4 jun y 20 jul 1979), energía total: $-125.91\to+38.29$ km$^2$/s$^2$. $\Delta E=38.29-(-125.91)=164.2$ km$^2$/s$^2$, igual al valor de C6. Con $E>0$ la órbita heliocéntrica es abierta: la sonda escapa del Sistema Solar.
+
+\subsection*{C8. Error de las cónicas (F12), valores del barrido}
+Con empalme en Laplace y $r_p=10\,R_J$: $17.5\,\%$ ($\vinf=2.5$), $5.7\,\%$ (5), $2.0\,\%$ (8), $1.0\,\%$ (10), $0.13\,\%$ (15). Las cónicas sobreestiman la ganancia. Ejemplo de lectura: a 8 km/s, $\Delta E_{cónicas}=1.020\times\Delta E_{N}$.
+
+\subsection*{C9. Maniobra detectada en Voyager 2}
+$a=2.83$ mm/s$^2=2.83\times10^{-6}$ km/s$^2$ durante $76.6$ min $=4596$ s:\\
+$\Delta v=a\,t=2.83\times10^{-6}\times4596=0.0130$ km/s $=\mathbf{13.0}$ m/s.\\
+Respecto a $\vinf=7.6$ km/s $=7600$ m/s: $13.0/7600=0.17\,\%$.
+
+\section*{Notas para la defensa}
+\begin{itemize}
+\item Las cifras salen de \texttt{resultados/*.json} del repositorio. Se regeneran con \texttt{python reproducir.py}.
+\item C3 y C4 usan valores redondeados del informe, por lo que pueden diferir en la última cifra de lo que imprime el código.
+\item Los cálculos C6, C7 y C8 son resultados de la simulación; aquí solo se verifica la aritmética que los relaciona.
+\end{itemize}
+\end{document}

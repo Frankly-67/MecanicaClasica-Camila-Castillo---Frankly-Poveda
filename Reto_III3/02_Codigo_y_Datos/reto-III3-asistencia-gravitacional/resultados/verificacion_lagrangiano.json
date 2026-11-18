@@ -1,0 +1,23 @@
+{
+  "simbolica": {
+    "euler_lagrange_coincide": true,
+    "h_igual_v2/2_menos_Omega": true,
+    "dh_dt_cero_sobre_soluciones": true,
+    "h_igual_E_menos_n_lz": true,
+    "limite_lejano_es_tisserand": true
+  },
+  "numerica": {
+    "duracion_dias": 240,
+    "E_inicio_km2_s2": -134.0917,
+    "E_fin_km2_s2": 21.6592,
+    "lz_inicio_km2_s": 5523770000.0,
+    "lz_fin_km2_s": 14802450000.0,
+    "h_inicio": -226.81305623,
+    "h_fin": -226.81305623,
+    "variacion_relativa_maxima_h": 3.65e-12,
+    "cambio_E_igual_n_por_cambio_lz": {
+      "Delta_E": 155.7509,
+      "n_Delta_lz": 155.7509
+    }
+  }
+}

@@ -1,0 +1,12 @@
+# Versiones exactas con las que se generaron los resultados (Python 3.13)
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.2
+pytest==9.1.1
+jplephem==2.24
+de421==2008.1
+spiceypy==8.3.0
+sympy==1.14.0       # verificación simbólica de la formulación lagrangiana
+rebound==5.2.2      # Modelo 2 (integración de N cuerpos)
+astronomy-engine==2.1.19   # posiciones de los satélites galileanos (Modelo 2 ampliado)
+# astroquery solo para scripts/descargar_horizons.py (opcional, requiere internet)

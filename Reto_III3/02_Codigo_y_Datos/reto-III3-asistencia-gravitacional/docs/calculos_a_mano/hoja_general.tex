@@ -1,0 +1,112 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}\setdefaultlanguage{spanish}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}\geometry{letterpaper,margin=2.2cm}
+\usepackage{fancyhdr}\pagestyle{fancy}
+\fancyhf{}\lhead{\small Reto III.3: el problema completo a mano}\rhead{\small Poveda y Castillo}\cfoot{\thepage}
+\usepackage{enumitem}\setlist{itemsep=2pt}
+\newcommand{\vinf}{v_\infty}\newcommand{\RJ}{R_J}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\sloppy\setlength{\emergencystretch}{3em}
+\begin{document}
+{\LARGE\bfseries El problema completo, hecho a mano}\\[2pt]
+Reto III.3. Asistencia gravitacional en Júpiter. Mecánica Clásica 2026-B\\
+\small Un solo hilo, de la pregunta a la respuesta, en el orden en que se haría en el tablero.
+
+\section*{0. La pregunta y los datos}
+Una sonda va de la Tierra a Saturno pasando cerca de Júpiter. Se pide (a) qué cantidad se conserva en cada sistema de referencia durante el encuentro y (b) cuánto se equivoca el método de cónicas empalmadas frente a integrar todo el problema.
+
+Constantes: $GM_\odot=1.3271\times10^{11}$ km$^3$/s$^2$; $GM_J=1.2671\times10^{8}$ km$^3$/s$^2$; $\RJ=71\,492$ km; $a_J=5.203$ UA $=7.783\times10^8$ km; 1 UA $=1.496\times10^8$ km. Velocidad circular de Júpiter: $v_J=\sqrt{GM_\odot/a_J}=\sqrt{170.5}=13.06$ km/s. Movimiento medio: $n=v_J/a_J=1.678\times10^{-8}$ rad/s.
+
+\section*{1. Punto de partida: por qué no basta la energía}
+En el sistema del Sol, la sonda gana energía al pasar por Júpiter porque Júpiter se mueve. El potencial de Júpiter depende del tiempo, así que $E$ no es constante. Hay que encontrar la simetría que sí queda. Se pasa a un sistema que rota con Júpiter, donde Sol y Júpiter están quietos y el potencial no depende del tiempo.
+
+\section*{2. Lagrangiano en el sistema rotante}
+Sol ($M_1$) y Júpiter ($M_2$) en órbita circular con velocidad angular $n$, $n^2a^3=G(M_1+M_2)$. Con $(x,y,z)$ en el sistema rotante, la velocidad inercial de la sonda es $\vec v=(\dot x-ny,\ \dot y+nx,\ \dot z)$. Por unidad de masa:
+\[L=\tfrac12\big[(\dot x-ny)^2+(\dot y+nx)^2+\dot z^2\big]+\frac{GM_1}{r_1}+\frac{GM_2}{r_2}.\]
+Expandiendo los cuadrados: $L=\tfrac12(\dot x^2+\dot y^2+\dot z^2)+n(x\dot y-y\dot x)+\tfrac12n^2(x^2+y^2)+\dfrac{GM_1}{r_1}+\dfrac{GM_2}{r_2}$. Se define $\Omega=\tfrac12n^2(x^2+y^2)+GM_1/r_1+GM_2/r_2$.
+
+\textbf{Euler--Lagrange.} $\partial L/\partial\dot x=\dot x-ny$ y $\partial L/\partial x=n\dot y+\partial_x\Omega$, entonces
+$\dfrac{d}{dt}(\dot x-ny)=n\dot y+\partial_x\Omega\ \Rightarrow\ \ddot x-2n\dot y=\partial_x\Omega$.
+Análogo en $y$: $\partial L/\partial\dot y=\dot y+nx$, $\partial L/\partial y=-n\dot x+\partial_y\Omega$, y se obtiene $\ddot y+2n\dot x=\partial_y\Omega$. En $z$: $\ddot z=\partial_z\Omega$. Los términos $\mp2n\dot q$ son la fuerza de Coriolis.
+
+\section*{3. La cantidad conservada}
+$L$ no depende explícitamente de $t$, entonces se conserva $h=\sum\dot q_k\,\partial L/\partial\dot q_k-L$.\\
+$\sum\dot q\,\partial L/\partial\dot q=\dot x(\dot x-ny)+\dot y(\dot y+nx)+\dot z^2=v_{rot}^2+n(x\dot y-y\dot x)$.\\
+Restando $L$: $h=\tfrac12v_{rot}^2-\Omega$.\\
+Ahora se pasa al sistema inercial. $E=\tfrac12v^2+U$, con $U=-GM_1/r_1-GM_2/r_2$, y con $\tfrac12v^2=\tfrac12v_{rot}^2+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2$ ($\rho^2=x^2+y^2$). El momento angular es $\ell_z=x(\dot y+nx)-y(\dot x-ny)=(x\dot y-y\dot x)+n\rho^2$. Entonces
+\[E-n\ell_z=\tfrac12v_{rot}^2+n(x\dot y-y\dot x)+\tfrac12n^2\rho^2-U-n(x\dot y-y\dot x)-n^2\rho^2=\tfrac12v_{rot}^2-\tfrac12n^2\rho^2-U=h,\]
+porque $-\Omega=-\tfrac12n^2\rho^2+U$. Conclusión:
+\[\boxed{h=E-n\ell_z=\text{cte}\qquad\Rightarrow\qquad\Delta E=n\,\Delta\ell_z}\]
+\textbf{Respuesta a (a), sistema del Sol:} ni $E$ ni $\ell_z$ se conservan; su variación está ligada por $n$. \textbf{Sistema rotante:} se conserva $h$. Vale con la órbita de Júpiter circular; si es excéntrica, $n$ se reemplaza por la velocidad angular instantánea $\omega(t)$.
+
+\section*{4. Cerca de Júpiter: problema de dos cuerpos}
+En el sistema de Júpiter la sonda siente la atracción $GM_J/\rho^2$ y la marea solar $\sim GM_\odot\rho/a^3$. Se comparan las dos aceleraciones en cada sistema (en el del Sol, la perturbación de Júpiter contra la atracción del Sol) y se igualan:
+\[\frac{M_\odot}{M_J}\Big(\frac\rho a\Big)^3=\frac{M_J}{M_\odot}\Big(\frac a\rho\Big)^2\ \Rightarrow\ \rho^5=a^5\Big(\frac{M_J}{M_\odot}\Big)^2\ \Rightarrow\ r_{SOI}=a\Big(\frac{M_J}{M_\odot}\Big)^{2/5}.\]
+Numérico: $M_J/M_\odot=9.548\times10^{-4}$; $(9.548\times10^{-4})^{0.4}=0.06193$; $r_{SOI}=7.783\times10^8\times0.06193=4.82\times10^7$ km $=674\,\RJ$.
+
+Dentro de $r_{SOI}$ se desprecia el Sol. Quedan dos cuerpos: la energía $\tfrac12\vinf^2$ y el momento angular jovicéntricos se conservan (\textbf{respuesta a (a), sistema de Júpiter}), la órbita es una hipérbola y $|\vec v_{\infty,ent}|=|\vec v_{\infty,sal}|$.
+
+\textbf{Hipérbola.} Semieje $a_h=\mu/\vinf^2$ con $\mu=GM_J$ (de $\tfrac12\vinf^2=\mu/2a_h$). Periapsis $r_p=a_h(e-1)$, entonces
+\[e=1+\frac{r_p\vinf^2}{\mu}.\]
+Órbita $r=p/(1+e\cos\theta)$; las asíntotas están en $\cos\theta_\infty=-1/e$. La velocidad gira $\delta=2\theta_\infty-\pi$, así que $\sin(\delta/2)=-\cos\theta_\infty$:
+\[\boxed{\sin\frac\delta2=\frac1e}\qquad r_p=\frac{\mu}{\vinf^2}\Big(\frac{1}{\sin(\delta/2)}-1\Big).\]
+Límites: $r_p\to\infty\Rightarrow e\to\infty,\ \delta\to0$ (no hay desvío); $\mu\to0\Rightarrow\delta\to0$.
+
+\section*{5. Pasar de nuevo al sistema del Sol}
+Como el encuentro es corto frente al año joviano, se trata como instantáneo en el Sol: $\vec v=\vec v_J+\vec v_\infty$, con $\vec v_J$ fija durante el giro. Entonces $|\vec v_{sal}|^2=v_J^2+\vinf^2+2\vec v_J\cdot\vec v_{\infty,sal}$, y como $|\vec v_\infty|$ no cambia,
+\[\Delta E=\tfrac12\big(v_{sal}^2-v_{ent}^2\big)=\vec v_J\cdot\big(\vec v_{\infty,sal}-\vec v_{\infty,ent}\big).\]
+El mayor $\Delta E$ posible es $2v_J\vinf$ (inversión total de $\vec v_\infty$ a lo largo de $\vec v_J$). Con $|\Delta\vec v_\infty|=2\vinf\sin(\delta/2)$, la ganancia crece con el giro y con $v_J\cdot\vinf$.
+
+\textbf{Predicción 1 (antes de simular).} $r_p\ge2\,\RJ$ y $\vinf=8$ km/s: $r_p\vinf^2/\mu=1.43\times10^5(64)/1.267\times10^8=0.0722$; $e=1.0722$; $\sin(\delta/2)=0.9327$; $\delta=137.7^\circ\approx138^\circ$. Con ese giro, $|\Delta\vec v_\infty|=2(8)(0.9327)=14.9$ km/s y $\Delta E_{m\acute{a}x}=v_J|\Delta\vec v_\infty|=13.06(14.9)=195$ km$^2$/s$^2$.\\
+\textbf{Predicción 2.} Si la sonda pasa por detrás de Júpiter (respecto a su movimiento), $\vec v_\infty$ gira hacia el sentido de $\vec v_J$ y $\vec v_J\cdot\Delta\vec v_\infty>0$: gana energía. Por delante, la pierde.
+
+\section*{6. Ejemplo completo: el vuelo óptimo}
+Datos del barrido (fechas reales de DE421): $v_J=12.816$ km/s, $\vinf=9.844$ km/s, $r_p=5.96\,\RJ=4.261\times10^5$ km, $v_{ent}=11.61$ km/s.
+\begin{enumerate}[label=\arabic*.]
+\item $e=1+4.261\times10^5(96.90)/1.267\times10^8=1.3258$.
+\item $\sin(\delta/2)=1/1.3258=0.7543$, $\delta/2=48.97^\circ$, $\delta=97.94^\circ$.
+\item Ángulo de llegada: $\cos\theta_{ent}=(v_{ent}^2-v_J^2-\vinf^2)/(2v_J\vinf)=(134.81-164.26-96.90)/252.33=-0.5008$, $\theta_{ent}=120.05^\circ$.
+\item Salida: $\theta_{sal}\approx\theta_{ent}-\delta=22.1^\circ$ (aproximación en el plano), $v_{sal}^2=164.26+96.90+252.33\cos22.1^\circ=495$, $v_{sal}=22.2$ km/s.
+\item $\Delta E=\tfrac12(494.5-134.8)=179.8$ km$^2$/s$^2$.
+\end{enumerate}
+La rapidez heliocéntrica pasa de $11.6$ a $22.2$ km/s sin gastar combustible. La energía que gana la sonda la pierde Júpiter, pero su cambio de velocidad es del orden de $m_{sonda}/M_J$, imperceptible.
+
+\section*{7. Cuánto cuesta ir directo (referencia)}
+Hohmann Tierra--Saturno: $a=(1+9.537)/2=5.268$ UA, tiempo $\tfrac12a^{3/2}=6.05$ años. Velocidad de salida respecto a la Tierra: $29.78\big(\sqrt{2(9.537)/(10.537)}-1\big)=29.78(0.3454)=10.29$ km/s, es decir $C3=v^2=105.8$ km$^2$/s$^2$.\\
+Con asistencia: $C3\le100$ y $3.42$ años. Menos energía y la mitad del tiempo.
+
+\section*{8. Modelo 1: cónicas empalmadas}
+Método (no se resuelve a mano, pero estos son los pasos):
+\begin{enumerate}[label=\arabic*.]
+\item Para fechas $t_0$ (salida), $t_J$ y $t_S$ se leen las posiciones de Tierra, Júpiter y Saturno.
+\item Lambert (variable universal) en cada tramo: se halla la elipse/hipérbola solar que pasa por dos posiciones en el tiempo de vuelo dado, y con ella las velocidades. Se obtienen $\vec v_{ent}$ y $\vec v_{sal}$ en Júpiter.
+\item $\vec v_{\infty,ent}=\vec v_{ent}-\vec v_J$, $\vec v_{\infty,sal}=\vec v_{sal}-\vec v_J$.
+\item Condición de sobrevuelo sin motor: $|\vec v_{\infty,ent}|=|\vec v_{\infty,sal}|$ y $r_p$ (de la fórmula de la sección 4 con el $\delta$ entre los dos vectores) $\ge2\,\RJ$.
+\item Se minimiza el tiempo total sujeto a $C3\le C3_{m\acute{a}x}$.
+\end{enumerate}
+Comprobación a mano de un tramo: la energía en la cónica se conserva, $v_1^2=v_{ent}^2+2GM_\odot(1/r_1-1/r_2)=134.8+2(879.6-167.3)=1559$, $v_1=39.49$ km/s; con $v_E=29.52$, $C3\approx(39.49-29.52)^2\approx99.4$.
+
+\section*{9. Modelo 2: N cuerpos}
+Se integran $\ddot{\vec r}_i=\sum_{j\ne i}GM_j(\vec r_j-\vec r_i)/|\vec r_j-\vec r_i|^3$ con un integrador de paso adaptativo de alto orden (IAS15). Se controla con: (i) la constante $h$, que debe conservarse; (ii) un segundo integrador independiente; (iii) los límites $M_J\to0$ y $r_p\to\infty$. Para ver la ganancia $\Delta E$ se parte del mismo periapsis en ambos modelos, se propaga hasta $>3\,r_{SOI}$ y se compara.
+
+\section*{10. Respuesta (b): el error de las cónicas}
+Se define $\varepsilon=(\Delta E_{c\acute{o}nicas}-\Delta E_{N\,cuerpos})/\Delta E_{N\,cuerpos}$. Con $r_p=10\,\RJ$ y empalme en $r_{SOI}$: $17.5\,\%$ ($\vinf=2.5$), $5.7\,\%$ (5), $2.0\,\%$ (8), $1.0\,\%$ (10), $0.13\,\%$ (15 km/s). La causa es el tiempo en la esfera, $t=r_{SOI}/\vinf$: a $2.5$ km/s son $223$ días y Júpiter se mueve $nt=0.32$ rad; a $15$ km/s son $37$ días y $0.054$ rad. Cuanto más dura el encuentro, peor es tratarlo como instantáneo. Estos porcentajes salen de la integración; la hoja \texttt{verificacion\_a\_mano} explica qué sí se puede rehacer a mano.
+
+\section*{11. Contraste con Voyager 2}
+Con datos reales (4 jun--20 jul 1979), $\Delta E=164.2$ km$^2$/s$^2$. $n\Delta\ell_z=173.2$ con $n$ medio ($5.5\,\%$ de diferencia) y $164.8$ con $\omega$ instantánea ($0.4\,\%$): Júpiter estaba a $5.33$ UA y $\omega/n=\sqrt{1-e^2}(a/R)^2=0.952$. Es la prueba de que la relación $\Delta E=n\Delta\ell_z$ es cierta solo en el caso circular y que el matiz es la excentricidad.
+
+\section*{Ruta resumida}
+\begin{center}
+\begin{tabular}{rl}
+1 & Lagrangiano rotante $\to$ $h=E-n\ell_z$ $\to$ $\Delta E=n\Delta\ell_z$\\
+2 & Esfera de influencia: $r_{SOI}=a(M_J/M_\odot)^{2/5}=674\,\RJ$\\
+3 & Dentro: hipérbola, $e=1+r_p\vinf^2/\mu$, $\sin(\delta/2)=1/e$\\
+4 & Fuera: $\vec v=\vec v_J+\vec v_\infty$; $\Delta E=\vec v_J\cdot\Delta\vec v_\infty$\\
+5 & Lambert entre planetas $\to$ condición $|\vec v_{\infty,ent}|=|\vec v_{\infty,sal}|$\\
+6 & Integrar N cuerpos desde el mismo periapsis y comparar $\Delta E$\\
+7 & Validar con Voyager 2\\
+\end{tabular}
+\end{center}
+\end{document}

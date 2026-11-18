@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><title>escena</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script src="datos.js"></script><script src="mision.js"></script>
+</head><body><canvas id="c" width="1280" height="720"></canvas>
+<script>
+"use strict";
+const W=1280,H=720, cv=document.getElementById("c"), g=cv.getContext("2d");
+const FONT="Inter, 'DejaVu Sans', sans-serif", MONO="'DejaVu Sans Mono', monospace";
+const D=window.DATOS, M=window.MISION;
+const COL={probe:"#ffb454",jup:"#5ad1e6",keep:"#7bd88f",chg:"#ff7a95",text:"#eef2ff",mut:"#a9b4d6",line:"#2c3a6b"};
+const MU=D.constantes.GM_J, RJ=D.constantes.RJ, RSOI=D.constantes.rSOI_RJ*RJ, NJ=D.constantes.n;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)), lerp=(a,b,t)=>a+(b-a)*t, ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const fmt=(x,n=2)=>x.toFixed(n);
+
+/* ---------- ruido y sprites procedurales ---------- */
+function hash(x,y){let h=Math.sin(x*127.1+y*311.7)*43758.5453;return h-Math.floor(h);}
+function vnoise(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  return lerp(lerp(hash(xi,yi),hash(xi+1,yi),u),lerp(hash(xi,yi+1),hash(xi+1,yi+1),u),v);}
+function fbm(x,y,o=4){let a=.5,s=0,f=1;for(let i=0;i<o;i++){s+=a*vnoise(x*f,y*f);f*=2;a*=.5;}return s;}
+function mix(c1,c2,t){return [lerp(c1[0],c2[0],t),lerp(c1[1],c2[1],t),lerp(c1[2],c2[2],t)];}
+function sphere(S,fn){const c=document.createElement("canvas");c.width=c.height=S;const x=c.getContext("2d"),im=x.createImageData(S,S);
+  for(let j=0;j<S;j++)for(let i=0;i<S;i++){const u=(i+.5)/S*2-1,v=(j+.5)/S*2-1,r2=u*u+v*v,k=(j*S+i)*4;
+    if(r2>=1){im.data[k+3]=0;continue;} const z=Math.sqrt(1-r2),col=fn(u,v,z);const a=clamp((1-Math.sqrt(r2))*S*.5,0,1);
+    im.data[k]=col[0];im.data[k+1]=col[1];im.data[k+2]=col[2];im.data[k+3]=255*a;}
+  x.putImageData(im,0,0);return c;}
+const SP={};
+function spr(name){ if(SP[name]) return SP[name]; let c;
+  if(name==="jupiter") c=sphere(360,(u,v,z)=>{ const lat=Math.asin(v), t=fbm(u*2.2+3,v*9+lat*2,4), band=.5+.5*Math.sin(lat*10.5+t*3.2+fbm(u*1.2,v*3,2)*2);
+    const pal=[[236,222,196],[206,168,128],[160,112,80],[190,110,70]];
+    let col=band<.35?mix(pal[2],pal[1],band/.35):band<.7?mix(pal[1],pal[0],(band-.35)/.35):mix(pal[0],pal[3],(band-.7)/.3*.6);
+    const ux=(u-.28)/.2, vy=(v-.34)/.1, d=ux*ux+vy*vy; if(d<1){ const k=1-d; col=mix(col,[196,84,58],clamp(k*1.6,0,1)); if(d>.7) col=mix(col,[235,205,180],.35);}
+    const tt=.9+.2*fbm(u*8,v*16,3); return [col[0]*tt,col[1]*tt,col[2]*tt]; });
+  else if(name==="saturn") c=sphere(360,(u,v,z)=>{ const lat=Math.asin(v), t=fbm(u*2+9,v*8,3), b=.5+.5*Math.sin(lat*14+t*2);
+    const col=mix([222,200,150],[198,170,120],b); const tt=.92+.12*t; return [col[0]*tt,col[1]*tt,col[2]*tt]; });
+  else if(name==="earth") c=sphere(240,(u,v,z)=>{ const n=fbm(u*2.4+5,v*2.4+2,5); let col; if(Math.abs(v)>.88) col=[238,243,250]; else if(n>.53) col=mix([62,130,70],[150,130,90],clamp((n-.53)*5,0,1)); else col=mix([20,70,150],[34,110,185],n/.53);
+    const cl=fbm(u*4+20,v*4+9,4); if(cl>.58) col=mix(col,[255,255,255],clamp((cl-.58)*4,0,.85)); return col; });
+  else if(name==="sun") c=sphere(300,(u,v,z)=>{ const n=fbm(u*9,v*9,4); const lim=Math.pow(z,.5); return [255,lerp(150,235,lim)*(.92+.1*n),lerp(40,150,lim)*(.9+.15*n)]; });
+  else if(name==="io") c=sphere(120,(u,v,z)=>{ const n=fbm(u*5,v*5,4); let col=mix([232,208,110],[210,160,70],n); if(n>.62) col=mix(col,[180,70,40],.6); return col; });
+  else if(name==="europa") c=sphere(120,(u,v,z)=>{ const n=fbm(u*6,v*6,3); let col=mix([236,230,216],[210,190,160],n); if(Math.abs(fbm(u*9,v*9,2)-.5)<.03) col=[150,100,80]; return col; });
+  else if(name==="ganymede") c=sphere(120,(u,v,z)=>{ const n=fbm(u*5+4,v*5,4); return mix([150,134,118],[196,186,172],n); });
+  else if(name==="callisto") c=sphere(120,(u,v,z)=>{ const n=fbm(u*7+8,v*7,4); let col=mix([78,70,64],[120,110,100],n); if(vnoise(u*14,v*14)>.9) col=[200,196,190]; return col; });
+  SP[name]=c; return c; }
+function planet(name,x,y,r,light){ // light: ángulo (rad) hacia el Sol
+  const s=spr(name); g.save(); g.drawImage(s,x-r,y-r,2*r,2*r); g.beginPath(); g.arc(x,y,r,0,7); g.clip();
+  if(light!==undefined){ const dx=Math.cos(light), dy=Math.sin(light); const gr=g.createLinearGradient(x+dx*r*.25,y+dy*r*.25,x-dx*r*1.05,y-dy*r*1.05);
+    gr.addColorStop(0,"rgba(0,0,12,0)"); gr.addColorStop(1,"rgba(0,0,12,.82)"); g.fillStyle=gr; g.fillRect(x-r,y-r,2*r,2*r); }
+  const rg=g.createRadialGradient(x,y,r*.55,x,y,r); rg.addColorStop(0,"rgba(0,0,10,0)"); rg.addColorStop(1,"rgba(0,0,10,.45)"); g.fillStyle=rg; g.fillRect(x-r,y-r,2*r,2*r);
+  g.restore(); }
+function saturn(x,y,r,light){ const tilt=.38; g.save();
+  const ring=(front)=>{ for(const [a,b,al] of [[1.25,1.5,.55],[1.55,1.8,.8],[1.85,2.2,.35]]){ g.beginPath(); g.ellipse(x,y,r*(a+b)/2,r*(a+b)/2*tilt,-.18,front?0:Math.PI,front?Math.PI:2*Math.PI);
+      g.strokeStyle=`rgba(224,205,160,${al})`; g.lineWidth=r*(b-a)*.9; g.stroke(); } };
+  ring(false); planet("saturn",x,y,r,light); ring(true); g.restore(); }
+function sunGlow(x,y,r){ const gr=g.createRadialGradient(x,y,r*.6,x,y,r*5); gr.addColorStop(0,"rgba(255,200,90,.55)"); gr.addColorStop(.25,"rgba(255,150,40,.18)"); gr.addColorStop(1,"rgba(255,120,20,0)");
+  g.fillStyle=gr; g.fillRect(x-r*5,y-r*5,r*10,r*10); planet("sun",x,y,r); }
+function probe(x,y,ang,sz=1){ g.save(); g.translate(x,y); g.rotate(ang);
+  const gl=g.createRadialGradient(0,0,0,0,0,16*sz); gl.addColorStop(0,"rgba(255,190,90,.9)"); gl.addColorStop(1,"rgba(255,180,80,0)"); g.fillStyle=gl; g.fillRect(-16*sz,-16*sz,32*sz,32*sz);
+  g.fillStyle="#fff1d6"; g.fillRect(-4*sz,-2.5*sz,8*sz,5*sz); g.strokeStyle="#ffd9a0"; g.lineWidth=1.5*sz;
+  g.beginPath(); g.moveTo(-4*sz,0); g.lineTo(-10*sz,0); g.stroke(); g.beginPath(); g.arc(5*sz,0,3.2*sz,-1.2,1.2); g.stroke(); g.restore(); }
+
+/* ---------- fondo ---------- */
+let BG; function fondo(){ if(!BG){ BG=document.createElement("canvas"); BG.width=W; BG.height=H; const x=BG.getContext("2d");
+    const gr=x.createRadialGradient(W*.35,H*.4,50,W*.5,H*.5,W*.8); gr.addColorStop(0,"#0f1a3d"); gr.addColorStop(.6,"#080d22"); gr.addColorStop(1,"#03050f"); x.fillStyle=gr; x.fillRect(0,0,W,H);
+    for(const [cx,cy,r,c] of [[220,520,330,"rgba(90,60,160,.16)"],[980,160,300,"rgba(40,110,170,.14)"],[640,700,380,"rgba(150,60,110,.08)"]]){ const n=x.createRadialGradient(cx,cy,0,cx,cy,r); n.addColorStop(0,c); n.addColorStop(1,"rgba(0,0,0,0)"); x.fillStyle=n; x.fillRect(0,0,W,H); }
+    for(let i=0;i<650;i++){ const a=hash(i,1.3),b=hash(i,7.7),s=hash(i,3.1); x.fillStyle=`rgba(${200+55*hash(i,9)|0},${210+40*hash(i,4)|0},255,${.25+.6*s})`; x.beginPath(); x.arc(a*W,b*H,.4+1.3*s*s,0,7); x.fill(); } }
+  g.drawImage(BG,0,0); }
+function twinkle(t){ for(let i=0;i<40;i++){ const a=hash(i,21.1),b=hash(i,5.5); g.fillStyle=`rgba(255,255,255,${.25+.35*Math.sin(t*2+i*1.7)})`; g.beginPath(); g.arc(a*W,b*H,1.1,0,7); g.fill(); } }
+
+/* ---------- utilidades de dibujo ---------- */
+function panel(x,y,w,h,title){ g.save(); g.fillStyle="rgba(8,13,34,.80)"; g.strokeStyle="rgba(120,140,220,.28)"; g.lineWidth=1; rr(x,y,w,h,12); g.fill(); g.stroke(); g.restore();
+  if(title){ txt(title,x+14,y+24,"500 15px "+FONT,COL.mut); } }
+function rr(x,y,w,h,r){ g.beginPath(); g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r); g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+function txt(s,x,y,font,col,al="left"){ g.font=font; g.fillStyle=col; g.textAlign=al; g.fillText(s,x,y); }
+function poly(pts,col,wd,dash){ if(pts.length<2) return; g.beginPath(); g.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length;i++) g.lineTo(pts[i][0],pts[i][1]); g.strokeStyle=col; g.lineWidth=wd; g.setLineDash(dash||[]); g.lineJoin="round"; g.stroke(); g.setLineDash([]); }
+function dot(x,y,r,c){ g.beginPath(); g.arc(x,y,r,0,7); g.fillStyle=c; g.fill(); }
+function arrow(x0,y0,x1,y1,col,wd=3){ const a=Math.atan2(y1-y0,x1-x0); poly([[x0,y0],[x1,y1]],col,wd); g.beginPath(); g.moveTo(x1,y1); g.lineTo(x1-12*Math.cos(a-.4),y1-12*Math.sin(a-.4)); g.lineTo(x1-12*Math.cos(a+.4),y1-12*Math.sin(a+.4)); g.closePath(); g.fillStyle=col; g.fill(); }
+function wrap(s,maxw,font){ g.font=font; const words=s.split(" "),lines=[]; let cur=""; for(const w of words){ const t=cur?cur+" "+w:w; if(g.measureText(t).width>maxw&&cur){lines.push(cur);cur=w;} else cur=t; } if(cur) lines.push(cur); return lines; }
+function fit(bb,x0,y0,w,h,m=0){ const s=Math.min((w-2*m)/(bb.x1-bb.x0),(h-2*m)/(bb.y1-bb.y0)), cx=(bb.x0+bb.x1)/2, cy=(bb.y0+bb.y1)/2; return {s,X:x=>x0+w/2+(x-cx)*s,Y:y=>y0+h/2-(y-cy)*s}; }
+function fecha(d0,dias){ const t=Date.UTC(1977,8,3)+dias*86400000, f=new Date(t); const m=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return f.getUTCDate()+" "+m[f.getUTCMonth()]+" "+f.getUTCFullYear(); }
+// gráfica genérica
+function graph(R,o){ panel(R.x,R.y,R.w,R.h,o.title); const L=R.x+54,Rr=R.x+R.w-16,T=R.y+40,B=R.y+R.h-46;
+  const X=x=>L+(x-o.x0)/(o.x1-o.x0)*(Rr-L), Y=o.log?(y=>T+(Math.log10(o.y1)-Math.log10(Math.max(y,o.y0)))/(Math.log10(o.y1)-Math.log10(o.y0))*(B-T)):(y=>T+(o.y1-y)/(o.y1-o.y0)*(B-T));
+  g.save(); g.beginPath(); g.rect(R.x,R.y,R.w,R.h); g.clip();
+  for(const v of o.yt){ poly([[L,Y(v)],[Rr,Y(v)]],"rgba(120,140,220,.16)",1); txt(o.yf?o.yf(v):String(v),L-8,Y(v)+5,"13px "+MONO,COL.mut,"right"); }
+  for(const v of o.xt){ txt(String(v),X(v),B+20,"13px "+MONO,COL.mut,"center"); poly([[X(v),B],[X(v),B+4]],COL.mut,1); }
+  if(o.xlabel) txt(o.xlabel,(L+Rr)/2,R.y+R.h-9,"12px "+FONT,COL.mut,"center");
+  for(const s of (o.bands||[])){ g.fillStyle=s.c; g.fillRect(X(s.a),T,Math.max(2,X(s.b)-X(s.a)),B-T); }
+  for(const h of (o.hlines||[])){ poly([[L,Y(h.y)],[Rr,Y(h.y)]],h.c,1.6,[6,5]); txt(h.t,L+6,Y(h.y)-6,"12px "+FONT,h.c); }
+  for(const s of o.series){ const n=Math.min(s.n??s.x.length, s.x.length); const pts=[]; for(let i=0;i<n;i++) pts.push([X(s.x[i]),Y(s.y[i])]);
+    poly(pts,s.c,s.w||3,s.d); if(n>0&&s.dot!==false){ const p=pts[n-1]; dot(p[0],p[1],5,s.c);} }
+  g.restore(); return {X,Y,L,Rr,T,B}; }
+
+/* ---------- elementos comunes (título, subtítulo) ---------- */
+function cabecera(titulo){ txt("Reto III.3 · Mecánica Clásica 2026-B · UIS",32,34,"500 15px "+FONT,COL.mut); txt(titulo,32,70,"700 30px "+FONT,COL.text); }
+function subtitulo(s){ const lines=wrap(s,1150,"500 22px "+FONT), h=lines.length*30+20, y=H-h-22; g.save(); g.fillStyle="rgba(4,7,20,.86)"; rr(40,y,1200,h,14); g.fill(); g.restore();
+  lines.forEach((l,i)=>txt(l,W/2,y+32+i*30,"500 22px "+FONT,COL.text,"center")); }
+function tarjetaTitulo(c,u){ const a=1; g.save(); planet("jupiter",1010,560,420,-2.2); g.restore();
+  g.fillStyle="rgba(3,5,15,.55)"; g.fillRect(0,0,W,H);
+  txt("Reto III.3 · Mecánica Clásica 2026-B · UIS",80,230,"500 20px "+FONT,COL.mut);
+  const ls=wrap(c.titulo,760,"700 66px "+FONT); ls.forEach((l,i)=>txt(l,80,320+i*74,"700 66px "+FONT,COL.text));
+  const y2=320+ls.length*74; wrap(c.sub,700,"400 26px "+FONT).forEach((l,i)=>txt(l,80,y2+10+i*36,"400 26px "+FONT,COL.jup));
+  txt("Poveda Pinzón y Castillo López",80,y2+120,"500 20px "+FONT,COL.mut); }
+
+/* ================= CLIP 1: MISIÓN ================= */
+function clipMision(q,beat,tt,c){
+  const cx=430, cy=332, s=29, N=M.dias.length, i=clamp(Math.round(q*(N-1)),0,N-1);
+  // órbitas
+  for(const [r,n] of [[1,"Tierra"],[5.2029,"Júpiter"],[9.5367,"Saturno"]]){ g.beginPath(); g.arc(cx,cy,r*s,0,7); g.strokeStyle="rgba(150,170,240,.55)"; g.lineWidth=1.4; g.setLineDash([3,6]); g.stroke(); g.setLineDash([]); }
+  txt("1 UA",cx+s+4,cy-6,"12px "+MONO,COL.mut); txt("5.2 UA",cx+5.2*s*.72,cy-5.2*s*.72-6,"12px "+MONO,COL.mut); txt("9.5 UA",cx+9.5*s*.72,cy-9.5*s*.72-6,"12px "+MONO,COL.mut);
+  // Hohmann
+  if(c.beats[beat].id==="hohmann"||c.beats[beat].id==="resumen"){ const e0=M.tierra[0], ph=Math.atan2(e0[1],e0[0]), a=(1+9.5367)/2, e=(9.5367-1)/(9.5367+1); const pts=[];
+    for(let k=0;k<=120;k++){ const th=Math.PI*k/120, r=a*(1-e*e)/(1+e*Math.cos(th)); pts.push([cx+r*s*Math.cos(ph+th),cy-r*s*Math.sin(ph+th)]); }
+    const upto=c.beats[beat].id==="hohmann"?Math.round(120*ease(clamp(tt/(c.beats[beat].dur*.8),0,1))):120; poly(pts.slice(0,upto+1),"#ff7a95",2.4,[8,6]);
+    if(upto>60) txt("Hohmann: 6.05 años",cx+4*s*Math.cos(ph+2.2),cy-4*s*Math.sin(ph+2.2),"600 16px "+FONT,"#ff9bb0","center"); }
+  // sonda
+  poly(M.sonda.slice(0,i+1).map(p=>[cx+p[0]*s,cy-p[1]*s]),COL.probe,3);
+  sunGlow(cx,cy,17);
+  const P=(a)=>[cx+a[0]*s,cy-a[1]*s]; const e=P(M.tierra[i]),j=P(M.jupiter[i]),sa=P(M.saturno[i]);
+  planet("earth",e[0],e[1],9,Math.atan2(cy-e[1],cx-e[0])); planet("jupiter",j[0],j[1],17,Math.atan2(cy-j[1],cx-j[0])); saturn(sa[0],sa[1],11,Math.atan2(cy-sa[1],cx-sa[0]));
+  txt("Tierra",e[0]+12,e[1]+16,"13px "+FONT,"#9cc9ff"); txt("Júpiter",j[0]+20,j[1]+4,"13px "+FONT,COL.jup); txt("Saturno",sa[0]+24,sa[1]+4,"13px "+FONT,"#e6d3a0");
+  const sp=P(M.sonda[i]), prv=P(M.sonda[Math.max(i-1,0)]), ang=Math.atan2(sp[1]-prv[1],sp[0]-prv[0]); if(i>0&&i<N-1||q<=0) probe(sp[0],sp[1],ang,1.1); else probe(sp[0],sp[1],ang,1.1);
+  const bid=c.beats[beat].id; if(bid==="encuentro"||bid==="salto"){ const k=(tt*1.4)%1; g.beginPath(); g.arc(j[0],j[1],20+60*k,0,7); g.strokeStyle=`rgba(90,209,230,${.8*(1-k)})`; g.lineWidth=3; g.stroke(); }
+  txt(fecha(0,q*M.t_saturno),32,H-76,"600 22px "+MONO,COL.text); txt("tamaños no a escala",32,106,"12px "+FONT,COL.mut);
+  { const x0=60,x1=820,y=H-24; poly([[x0,y],[x1,y]],"rgba(160,180,250,.5)",3); const qJ=M.t_jupiter/M.t_saturno;
+    [[0,"Lanzamiento · 3 sep 1977"],[qJ,"Júpiter · 12 abr 1979"],[1,"Saturno · 1 feb 1981"]].forEach(([qq,l],k)=>{ const xx=lerp(x0,x1,qq); dot(xx,y,6,qq<=q+1e-6?COL.probe:"#44507f"); txt(l,k===2?xx:(k===0?xx:xx),y-14,"600 14px "+FONT,qq<=q+1e-6?COL.text:COL.mut,k===2?"right":(k===0?"left":"center")); });
+    poly([[x0,y],[lerp(x0,x1,q),y]],COL.probe,3); }
+  // panel derecho
+  const dT=M.dias; graph({x:880,y:100,w:380,h:300},{title:"Rapidez respecto al Sol (km/s)",x0:0,x1:M.t_saturno,y0:0,y1:45,xt:[0,300,600,900,1200],yt:[0,10,20,30,40],xlabel:"días desde el lanzamiento",
+    bands:[],hlines:[],series:[{x:dT,y:M.rapidez,c:COL.probe,n:i+1}]});
+  const S=M.resumen, cards=[["C3",fmt(S.C3,0)+" km²/s²"],["v∞ en Júpiter",fmt(S.vinf,2)+" km/s"],["periapsis",fmt(S.rp_RJ,2)+" R_J"],["ΔE heliocéntrica",fmt(S.dE,0)+" km²/s²"]];
+  const show=bid==="titulo"||bid==="hohmann"?0:bid==="ida"?1:bid==="encuentro"?3:bid==="salto"?4:4;
+  cards.forEach((cd,k)=>{ if(k<show){ const x=880+(k%2)*196, y=418+Math.floor(k/2)*78; panel(x,y,184,68); txt(cd[0],x+12,y+24,"13px "+FONT,COL.mut); txt(cd[1],x+12,y+52,"600 19px "+MONO,k===3?COL.chg:COL.text); } });
+  if(bid==="salto"||bid==="vuelta"||bid==="resumen"||bid==="datos"){ const jv=22.237, y=(v)=>0; txt("11.6 → 22.2 km/s",1244,134,"700 16px "+FONT,COL.chg,"right"); }
+  if(bid==="resumen"){ panel(880,418,380,160,"Comparación"); txt("Con asistencia: 3.42 años · C3 = 100",894,462,"500 17px "+FONT,COL.keep); txt("Hohmann directo: 6.05 años · C3 = 105.8",894,496,"500 17px "+FONT,"#ff9bb0"); txt("Menos tiempo y menos energía de lanzamiento",894,540,"14px "+FONT,COL.mut); }
+}
+
+/* ================= CLIP 2: ENCUENTRO ================= */
+const VJ=12.816, VINF=9.844, RP=5.956*RJ, TH=120.05*Math.PI/180;
+function geom2(){ const a=MU/(VINF*VINF), e=1+RP*VINF*VINF/MU, b=a*Math.sqrt(e*e-1), delta=2*Math.asin(1/e), sg=-1, phi=Math.acos(1/e), alpha=TH-sg*phi;
+  const rot=(x,y)=>[x*Math.cos(alpha)-y*Math.sin(alpha),x*Math.sin(alpha)+y*Math.cos(alpha)];
+  const rho=H=>rot(a*(e-Math.cosh(H)),sg*b*Math.sinh(H)), tf=H=>Math.sqrt(a**3/MU)*(e*Math.sinh(H)-H);
+  const thOut=TH-delta, uin=[VINF*Math.cos(TH),VINF*Math.sin(TH)], uout=[VINF*Math.cos(thOut),VINF*Math.sin(thOut)];
+  const dir=H=>{const v=rot(-a*Math.sinh(H),sg*b*Math.cosh(H));return Math.atan2(v[1],v[0]);};
+  return {a,e,b,delta,rho,tf,uin,uout,dir,thOut,alpha,vin:Math.hypot(VJ+uin[0],uin[1]),vout:Math.hypot(VJ+uout[0],uout[1]),
+    Hv:Math.acosh((6e6/a+1)/e), Hs:Math.acosh((RSOI/a+1)/e)}; }
+const G2=geom2();
+function clipEncuentro(q,beat,tt,c){
+  const bid=c.beats[beat].id, sunMode=["sol","triangulo","numeros","energia","cierre"].includes(bid);
+  const fadeIn=clamp(tt/.8,0,1);
+  const Ax=0,Ay=90,Aw=860,Ah=520, cx=Ax+Aw/2, cy=Ay+Ah/2;
+  if(!sunMode){ // sistema de Júpiter, a escala: 1 R_J = 13 px
+    const sc=13/RJ, cyJ=cy-20, X=x=>cx+x*sc, Y=y=>cyJ-y*sc, Hz=Math.acosh((14*RJ/G2.a+1)/G2.e);
+    const Hs=[];for(let k=0;k<=240;k++)Hs.push(-Hz+2*Hz*k/240);
+    const path=Hs.map(h=>{const r=G2.rho(h);return [X(r[0]),Y(r[1])];});
+    poly(path,"rgba(150,170,240,.35)",2,[6,6]);
+    const H=-Hz+2*Hz*q, k=Math.max(1,Math.round(240*q)); poly(path.slice(0,k+1),COL.probe,4);
+    planet("jupiter",X(0),Y(0),13,-0.6);
+    const r=G2.rho(H), a=G2.dir(H); probe(X(r[0]),Y(r[1]),a,1.4);
+    const pi=path[0], po=path[240], ai=G2.dir(-Hz), ao=G2.dir(Hz);
+    const arr=(p,an,lab,toward)=>{ const dx=Math.cos(an),dy=-Math.sin(an); const q0=toward?[p[0]-dx*62,p[1]-dy*62]:p, q1=toward?p:[p[0]+dx*62,p[1]+dy*62];
+      arrow(q0[0],q0[1],q1[0],q1[1],toward?COL.keep:COL.probe,3.5); txt(lab,(q0[0]+q1[0])/2+10,(q0[1]+q1[1])/2-10,"700 16px "+FONT,toward?COL.keep:COL.probe); };
+    arr(pi,ai,"v∞ (entra)",true); arr(po,ao,"v∞ (sale)",false);
+    txt("Sistema de Júpiter",32,Ay+30,"600 18px "+FONT,COL.jup); txt("a escala: 1 R_J = 13 px",32,Ay+Ah-8,"12px "+FONT,COL.mut);
+    if(bid==="giro"){ const pp=G2.rho(0); const peri=[X(pp[0]),Y(pp[1])]; poly([[X(0),Y(0)],peri],COL.chg,2.5,[5,4]); txt("periapsis 5.96 R_J",peri[0]-128,peri[1]+4,"600 15px "+FONT,COL.chg); }
+    panel(880,100,380,500,bid==="hiperbola"?"La hipérbola":"El giro");
+    const rows=[["excentricidad e","1 + r_p v∞² / μ = "+fmt(G2.e,3)],["v∞ entra = sale",fmt(VINF,2)+" km/s"],["periapsis r_p","5.96 R_J"],["giro δ","sen(δ/2) = 1/e → "+fmt(G2.delta*180/Math.PI,1)+"°"]];
+    rows.forEach((rw,k)=>{ if(bid==="hiperbola"&&k>2) return; const y=150+k*74; txt(rw[0],900,y,"14px "+FONT,COL.mut); txt(rw[1],900,y+28,"600 17px "+MONO,k===3?COL.chg:COL.text); });
+    if(bid==="giro"){ const ox=1030, oy=520, R1=80; const ui=ai, uo=ao;
+      arrow(ox-R1*Math.cos(ui),oy+R1*Math.sin(ui),ox,oy,COL.keep,3); arrow(ox,oy,ox+R1*Math.cos(uo),oy-R1*Math.sin(uo),COL.probe,3);
+      poly([[ox,oy],[ox+R1*Math.cos(ui),oy-R1*Math.sin(ui)]],"rgba(255,255,255,.35)",1.5,[4,4]);
+      g.beginPath(); g.arc(ox,oy,46,-ui,-uo,false); g.strokeStyle=COL.chg; g.lineWidth=2.4; g.stroke();
+      txt("δ",ox+62*Math.cos((ui+uo)/2),oy-62*Math.sin((ui+uo)/2)+7,"700 22px "+FONT,COL.chg,"center"); }
+  } else { // sistema del Sol
+    const pts=[];const N=240; for(let k=0;k<=N;k++){ const h=-G2.Hs+2*G2.Hs*k/N, r=G2.rho(h), t=G2.tf(h); pts.push({p:[VJ*t+r[0],r[1]],j:[VJ*t,0]}); }
+    let x0=1e99,x1=-1e99,y0=1e99,y1=-1e99; for(const o of pts)for(const q2 of[o.p,o.j]){x0=Math.min(x0,q2[0]);x1=Math.max(x1,q2[0]);y0=Math.min(y0,q2[1]);y1=Math.max(y1,q2[1]);}
+    y0=Math.min(y0,-.12*(x1-x0)); y1=Math.max(y1,.12*(x1-x0)); const f=fit({x0,x1,y0,y1},Ax,Ay,Aw,Ah,40);
+    const qq=bid==="sol"?q:1, k=Math.max(1,Math.round(N*qq));
+    poly(pts.map(o=>[f.X(o.j[0]),f.Y(o.j[1])]),"rgba(90,209,230,.35)",2,[4,6]); poly(pts.map(o=>[f.X(o.p[0]),f.Y(o.p[1])]),"rgba(150,170,240,.3)",2);
+    poly(pts.slice(0,k+1).map(o=>[f.X(o.p[0]),f.Y(o.p[1])]),COL.probe,4); const cur=pts[k];
+    planet("jupiter",f.X(cur.j[0]),f.Y(0),30,-1.2); const a=Math.atan2(f.Y(cur.p[1])-f.Y(pts[Math.max(k-1,0)].p[1]),f.X(cur.p[0])-f.X(pts[Math.max(k-1,0)].p[0])); probe(f.X(cur.p[0]),f.Y(cur.p[1]),a,1.4);
+    txt("Sistema del Sol",32,Ay+30,"600 18px "+FONT,COL.probe); arrow(60,Ay+Ah-30,150,Ay+Ah-30,COL.jup,3); txt("movimiento de Júpiter",160,Ay+Ah-25,"14px "+FONT,COL.jup);
+    // triángulo
+    panel(880,100,380,500,"Triángulo de velocidades");
+    const ox=910,oy=330,s=13; const X=v=>ox+v*s,Y=v=>oy-v*s; const prog=bid==="sol"?0:bid==="triangulo"?clamp(tt/(c.beats[beat].dur*.8),0,1):1;
+    g.beginPath(); g.arc(X(VJ),Y(0),VINF*s,0,7); g.strokeStyle="rgba(150,170,240,.4)"; g.setLineDash([5,6]); g.lineWidth=1.5; g.stroke(); g.setLineDash([]);
+    arrow(X(0),Y(0),X(VJ*Math.min(1,prog*3)),Y(0),COL.jup,4); txt("v_J = "+fmt(VJ,2),X(VJ/2),Y(0)+22,"600 14px "+MONO,COL.jup,"center");
+    const Pin=[VJ+G2.uin[0],G2.uin[1]], Pout=[VJ+G2.uout[0],G2.uout[1]];
+    if(prog>.34){ const k2=clamp((prog-.34)/.33,0,1); arrow(X(VJ),Y(0),X(VJ+G2.uin[0]*k2),Y(G2.uin[1]*k2),COL.keep,3); }
+    if(prog>.67){ const k3=clamp((prog-.67)/.33,0,1); const ang=lerp(TH,G2.thOut,k3); arrow(X(VJ),Y(0),X(VJ+VINF*Math.cos(ang)),Y(VINF*Math.sin(ang)),COL.probe,3.4); }
+    if(bid==="numeros"||bid==="energia"||bid==="cierre"){ arrow(X(0),Y(0),X(Pin[0]),Y(Pin[1]),"rgba(255,255,255,.55)",2); arrow(X(0),Y(0),X(Pout[0]),Y(Pout[1]),COL.probe,4);
+      txt("llega "+fmt(G2.vin,1),X(Pin[0])-8,Y(Pin[1])-8,"600 14px "+MONO,"#dfe6ff","right"); txt("sale "+fmt(G2.vout,1),X(Pout[0])+6,Y(Pout[1])-10,"600 14px "+MONO,COL.probe); }
+    if(bid==="energia"||bid==="cierre"){ panel(895,470,350,112); txt("ΔE = v_J · Δv∞",910,500,"600 18px "+MONO,COL.text); txt("= "+fmt(0.5*(G2.vout**2-G2.vin**2),1)+" km²/s²",910,530,"700 22px "+MONO,COL.chg);
+      txt("0.5·(22.24² − 11.61²)",910,562,"14px "+MONO,COL.mut); }
+  }
+}
+
+/* ================= CLIP 3: CONSERVACIÓN ================= */
+function clipCons(q,beat,tt,c){
+  const n=D.nbody, N=n.t.length, i=clamp(Math.round(q*(N-1)),0,N-1), bid=c.beats[beat].id;
+  const cx=430,cy=340,s=44; let m=5.7; const f=fit({x0:-m,x1:m,y0:-m,y1:m},0,90,860,520,6);
+  g.beginPath(); g.arc(f.X(0),f.Y(0),5.2028*f.s,0,7); g.strokeStyle="rgba(160,180,250,.6)"; g.lineWidth=1.5; g.setLineDash([4,7]); g.stroke(); g.setLineDash([]);
+  poly(n.px.map((x,k)=>[f.X(x),f.Y(n.py[k])]),"rgba(150,170,240,.28)",2);
+  poly(n.px.slice(0,i+1).map((x,k)=>[f.X(x),f.Y(n.py[k])]),COL.probe,3.4);
+  sunGlow(f.X(0),f.Y(0),22);
+  const jx=f.X(n.jx[i]), jy=f.Y(n.jy[i]); planet("jupiter",jx,jy,24,Math.atan2(f.Y(0)-jy,f.X(0)-jx));
+  const a=Math.atan2(f.Y(n.py[Math.min(i+1,N-1)])-f.Y(n.py[Math.max(i-1,0)]),f.X(n.px[Math.min(i+1,N-1)])-f.X(n.px[Math.max(i-1,0)])); probe(f.X(n.px[i]),f.Y(n.py[i]),a,1.2);
+  txt("Sol",f.X(0)+30,f.Y(0)+6,"14px "+FONT,"#ffd27a"); txt("órbita de Júpiter, 5.2 UA",32,H-36,"13px "+FONT,COL.mut); txt("t = "+(n.t[i]>=0?"+":"")+fmt(n.t[i],0)+" días del periapsis",32,H-62,"600 20px "+MONO,COL.text);
+  const showN=!["titulo","energia","salto"].includes(bid), showH=["h","simetria","voyager"].includes(bid);
+  const ser=[{x:n.t,y:n.E,c:COL.chg,n:i+1}]; if(showN) ser.push({x:n.t,y:n.nLz,c:COL.probe,n:i+1}); if(showH) ser.push({x:n.t,y:n.h,c:COL.keep,n:i+1});
+  const gr=graph({x:880,y:100,w:380,h:370},{title:"Por unidad de masa (km²/s²)",x0:-250,x1:250,y0:-270,y1:200,xt:[-250,-125,0,125,250],yt:[-250,-150,-50,50,150],xlabel:"días desde el periapsis",series:ser});
+  const lab=(t,y,col)=>txt(t,gr.L+8,y-6,"600 14px "+FONT,col); lab("E",gr.Y(n.E[0]),COL.chg); if(showN) lab("n·ℓz",gr.Y(n.nLz[0]),COL.probe); if(showH) lab("h = E − nℓz",gr.Y(n.h[0]),COL.keep);
+  const dE=n.E[i]-n.E[0], dn=n.nLz[i]-n.nLz[0];
+  panel(880,486,380,114); txt("ΔE = "+(dE>=0?"+":"")+fmt(dE,1),896,520,"600 19px "+MONO,COL.chg);
+  if(showN) txt("n·Δℓz = "+(dn>=0?"+":"")+fmt(dn,1),896,552,"600 19px "+MONO,COL.probe); if(showH) txt("h = "+fmt(n.h[i],3)+" (constante)",896,584,"600 17px "+MONO,COL.keep);
+  if(bid==="voyager"){ panel(40,100,420,150,"Voyager 2 real, 4 jun–20 jul 1979"); txt("ΔE = 164.2 km²/s²",58,150,"600 18px "+MONO,COL.text); txt("n medio·Δℓz = 173.2  (+5.5 %)",58,184,"600 16px "+MONO,COL.chg); txt("ω instantánea → 164.8  (+0.4 %)",58,218,"600 16px "+MONO,COL.keep); }
+  if(bid==="simetria"){ panel(40,100,420,110); txt("h = E − n ℓz  constante",58,150,"700 22px "+MONO,COL.keep); txt("⟹  ΔE = n Δℓz",58,190,"600 22px "+MONO,COL.text); }
+}
+
+/* ================= CLIP 4: CÓNICAS ================= */
+function errAt(k,v){ const o=D.error_conicas[k]; const ks=Object.keys(o).map(Number).sort((a,b)=>a-b); if(v<=ks[0]) return o[String(ks[0])]; for(let i=1;i<ks.length;i++){ if(v<=ks[i]){ const a=ks[i-1],b=ks[i],ya=Math.log(o[String(a)]),yb=Math.log(o[String(b)]); return Math.exp(ya+(yb-ya)*(v-a)/(b-a)); } } return o[String(ks[ks.length-1])]; }
+function clipConicas(q,beat,tt,c){
+  const bid=c.beats[beat].id, bd=c.beats[beat];
+  const Tc=(v)=>2*RSOI/v/86400, T25=Tc(2.5), T15=Tc(15);
+  const phase=bid==="titulo"?0:bid==="lento"?clamp(tt/(bd.dur*.9),0,1):1; const clock=phase*T25*1.0;
+  [[2.5,T25,215],[15,T15,645]].forEach(([v,Tcr,cx])=>{ const cy=340,R=150; g.beginPath(); g.arc(cx,cy,R,0,7); g.strokeStyle="rgba(160,180,250,.65)"; g.lineWidth=1.5; g.setLineDash([4,7]); g.stroke(); g.setLineDash([]);
+    const cur=Math.min(clock,Tcr)*86400*NJ, th0=-Math.PI/2; g.beginPath(); g.moveTo(cx,cy); g.arc(cx,cy,R,th0,th0+cur,false); g.closePath(); g.fillStyle="rgba(90,209,230,.22)"; g.fill();
+    sunGlow(cx,cy,16); const jx=cx+R*Math.cos(th0+cur), jy=cy+R*Math.sin(th0+cur); planet("jupiter",jx,jy,22,Math.atan2(cy-jy,cx-jx));
+    txt("v∞ = "+fmt(v,1)+" km/s",cx,cy-R-46,"700 24px "+FONT,COL.text,"center"); txt(fmt(Math.min(clock,Tcr),0)+" de "+fmt(Tcr,0)+" días en la esfera",cx,cy+R+36,"500 17px "+MONO,COL.mut,"center");
+    txt("Júpiter avanzó "+fmt(cur*180/Math.PI,1)+"°",cx,cy+R+62,"700 19px "+MONO,COL.jup,"center"); });
+  txt("Cuánto avanza Júpiter mientras la sonda cruza su esfera de influencia",430,106,"500 18px "+FONT,COL.mut,"center");
+  const xs=[];for(let x=2.5;x<=15.001;x+=.25)xs.push(x);
+  const reveal=(bid==="curva")?ease(clamp(tt/(bd.dur*.85),0,1)):(["titulo","lento","avance"].includes(bid)?0:1), nn=Math.round(reveal*xs.length);
+  const ser=[["r_p = 3 R_J",COL.chg],["r_p = 10 R_J",COL.probe],["r_p = 30 R_J",COL.jup]].map(([k,cl])=>({x:xs,y:xs.map(x=>Math.max(.1,errAt(k,x))),c:cl,n:nn,w:3.2}));
+  const hl=[]; if(["umbral","conclusion"].includes(bid)) hl.push({y:2,c:COL.keep,t:"2 %"},{y:10,c:COL.chg,t:"10 %"});
+  const gr=graph({x:880,y:100,w:380,h:420},{title:"Error de las cónicas en ΔE (empalme en r_SOI)",x0:2.5,x1:15,y0:.1,y1:100,log:true,xt:[2.5,5,8,10,15],yt:[.1,1,10,100],yf:v=>v+" %",xlabel:"v∞ (km/s)",series:ser,hlines:hl});
+  [["r_p = 3 R_J",COL.chg],["r_p = 10 R_J",COL.probe],["r_p = 30 R_J",COL.jup]].forEach(([k,cl],j)=>{ const lx=gr.Rr-118, ly=gr.T+14+j*19; poly([[lx,ly-4],[lx+22,ly-4]],cl,3); txt(k.replace("r_p","rp"),lx+30,ly,"600 13px "+FONT,cl); });
+  if(["valores","umbral","conclusion"].includes(bid)){ for(const v of [2.5,15]){ const e=errAt("r_p = 10 R_J",v); dot(gr.X(v),gr.Y(e),7,"#fff"); txt(fmt(e,v<5?1:2)+" %",gr.X(v)+(v<5?12:-10),gr.Y(e)+(v<5?-10:-16),"700 17px "+MONO,COL.text,v<5?"left":"right"); } }
+  if(bid==="conclusion"){ panel(880,536,380,64); txt("Error < 2 %: v∞ ≳ 8 km/s  ·  Error > 10 %: v∞ ≲ 3 km/s",894,574,"600 14px "+FONT,COL.text); }
+}
+
+/* ================= CLIP 5: VOYAGER 2 ================= */
+const V=D.voyager;
+function idxDia(d){ let k=V.dias.findIndex(x=>x>=d); return k<0?V.dias.length-1:k; }
+function clipVoyager(q,beat,tt,c){
+  const bid=c.beats[beat].id, bd=c.beats[beat], N=V.dias.length;
+  const iA=idxDia(-1.5), iP=idxDia(0), iM1=idxDia(V.maniobra_dias[0]), iM2=idxDia(V.maniobra_dias[1]), iB=idxDia(1.0), u=ease(clamp(tt/bd.dur,0,1));
+  let i,Wv; const keys={titulo:[0,0,320,320],datos:[0,0,320,320],llegada:[0,iA,320,40],periapsis:[iA,iP,40,28],puntual:[iP,iM1,28,28],maniobra:[iM1,iM2,28,18],completo:[iM2,iB,18,28],cierre:[iB,iB,28,28]};
+  const kk=keys[bid]; i=Math.round(lerp(kk[0],kk[1],u)); Wv=lerp(kk[2],kk[3],u);
+  const cx=430, cy=345, s=255/Wv; const X=x=>cx+x*s, Y=y=>cy-y*s;
+  // anillos de órbitas de los satélites
+  for(const [r,nm] of [[5.9,"Ío"],[9.4,"Europa"],[15.0,"Ganímedes"],[26.3,"Calisto"]]){ g.beginPath(); g.arc(X(0),Y(0),r*s,0,7); g.strokeStyle="rgba(130,150,230,.26)"; g.lineWidth=1.2; g.stroke(); if(r*s>40&&r*s<440) txt(nm,X(0)+r*s*.71+4,Y(0)-r*s*.71-4,"12px "+FONT,COL.mut); }
+  const upto=Math.min(i,N-1); const trail=(arr,col,wd,dash)=>poly(arr.slice(0,upto+1).map(p=>[X(p[0]),Y(p[1])]),col,wd,dash);
+  poly(V.real.map(p=>[X(p[0]),Y(p[1])]),"rgba(150,170,240,.18)",1.5);
+  if(["puntual","maniobra","completo","cierre"].includes(bid)) trail(V.puntual,COL.chg,2.4,[7,5]);
+  if(["maniobra","completo","cierre"].includes(bid)) trail(V.completo,COL.jup,2.4);
+  trail(V.real,COL.probe,3.4);
+  const rJ=Math.max(5,s*1.0); planet("jupiter",X(0),Y(0),rJ,-0.5);
+  for(const [n,col] of [["io","io"],["europa","europa"],["ganymede","ganymede"],["callisto","callisto"]]) planet(col,X(V[n][upto][0]),Y(V[n][upto][1]),Math.max(4,s*.55),-0.5);
+  const pr=V.real[upto], pb=V.real[Math.max(upto-1,0)]; const ang=Math.atan2(-(pr[1]-pb[1]),pr[0]-pb[0]); probe(X(pr[0]),Y(pr[1]),ang,1.3);
+  if(bid==="maniobra"){ const k=(tt*1.3)%1; g.beginPath(); g.arc(X(pr[0]),Y(pr[1]),14+40*k,0,7); g.strokeStyle=`rgba(255,180,84,${.9*(1-k)})`; g.lineWidth=3; g.stroke(); txt("encendido de 76 min · Δv = 13.0 m/s",X(pr[0])-34,Y(pr[1])-34,"700 17px "+FONT,COL.probe,"right"); }
+  if(bid==="periapsis"&&u>.7){ poly([[X(0),Y(0)],[X(pr[0]),Y(pr[1])]],COL.chg,2,[5,4]); txt("10.09 R_J",(X(0)+X(pr[0]))/2+10,(Y(0)+Y(pr[1]))/2,"700 17px "+MONO,COL.chg); }
+  const t0=Date.parse(V.periapsis_utc.replace(" ","T")+"Z"), fd=new Date(t0+V.dias[upto]*86400000);
+  txt(fd.toISOString().slice(0,16).replace("T"," ")+" UTC",32,H-62,"600 20px "+MONO,COL.text); txt("escala: "+fmt(Wv,0)+" R_J a cada lado de Júpiter",32,H-36,"13px "+FONT,COL.mut);
+  txt("real",900,0,"1px "+FONT,"#0000");
+  // gráficas
+  const over=["titulo","datos","llegada"].includes(bid);
+  if(over){ const rr=V.real.map(p=>Math.hypot(p[0],p[1])), vv=V.real.map((p,k)=>{ const a=Math.max(k-1,0),b=Math.min(k+1,N-1); return Math.hypot(V.real[b][0]-V.real[a][0],V.real[b][1]-V.real[a][1])*RJ/((V.dias[b]-V.dias[a])*86400); });
+    graph({x:880,y:100,w:380,h:250},{title:"Distancia a Júpiter (R_J)",x0:-36,x1:12,y0:5,y1:500,log:true,xt:[-30,-20,-10,0,10],yt:[10,100],yf:v=>String(v),xlabel:"días desde el periapsis",series:[{x:V.dias,y:rr,c:COL.probe,n:upto+1,w:3.2}]});
+    graph({x:880,y:366,w:380,h:234},{title:"Rapidez respecto a Júpiter (km/s)",x0:-36,x1:12,y0:0,y1:50,xt:[-30,-20,-10,0,10],yt:[0,10,20,30,40],xlabel:"días desde el periapsis",series:[{x:V.dias,y:vv,c:COL.jup,n:upto+1,w:3.2}]});
+    return; }
+  const win=idxDia(-1.5), end=idxDia(1.0), ds=V.dias.slice(win,end+1), n1=Math.max(0,Math.min(upto,end)-win+1);
+  const sw=(a)=>a.slice(win,end+1);
+  const gr=graph({x:880,y:100,w:380,h:250},{title:"v∞ equivalente (km/s)",x0:-1.5,x1:1,y0:7.56,y1:7.68,xt:[-1.5,-1,-.5,0,.5,1],yt:[7.58,7.62,7.66],yf:v=>v.toFixed(2),xlabel:"días desde el periapsis",
+    bands:[{a:V.maniobra_dias[0],b:V.maniobra_dias[1],c:"rgba(255,180,84,.35)"}],
+    series:[{x:ds,y:sw(V.vinf_real),c:COL.probe,n:n1,w:3.4},{x:ds,y:sw(V.vinf_puntual),c:COL.chg,n:["puntual","maniobra","completo","cierre"].includes(bid)?n1:0,w:2.6,d:[7,5]},{x:ds,y:sw(V.vinf_completo),c:COL.jup,n:["completo","cierre"].includes(bid)?n1:0,w:2.6}]});
+  txt("maniobra",gr.X(V.maniobra_dias[0])+6,gr.T+16,"600 12px "+FONT,COL.probe);
+  [["real",COL.probe],["Júpiter puntual",COL.chg],["modelo completo",COL.jup]].forEach(([k,cl],j)=>{ const lx=gr.L+8, ly=gr.B-58+j*17; poly([[lx,ly-4],[lx+20,ly-4]],cl,3); txt(k,lx+28,ly,"600 12px "+FONT,cl); });
+  const errP=sw(V.puntual).map((p,k)=>Math.hypot(p[0]-sw(V.real)[k][0],p[1]-sw(V.real)[k][1])*RJ), errC=sw(V.completo).map((p,k)=>Math.hypot(p[0]-sw(V.real)[k][0],p[1]-sw(V.real)[k][1])*RJ);
+  const emax=Math.max(...errP,...errC)*1.1;
+  graph({x:880,y:366,w:380,h:234},{title:"Error de posición del modelo (km)",x0:-1.5,x1:1,y0:0,y1:emax,xt:[-1.5,-1,-.5,0,.5,1],yt:[0,Math.round(emax/3/100)*100,Math.round(emax*2/3/100)*100],yf:v=>String(Math.round(v)),xlabel:"días desde el periapsis",
+    series:[{x:ds,y:errP,c:COL.chg,n:["puntual","maniobra","completo","cierre"].includes(bid)?n1:0,w:2.8,d:[7,5]},{x:ds,y:errC,c:COL.jup,n:["completo","cierre"].includes(bid)?n1:0,w:2.8}]});
+}
+
+/* ---------- despachador ---------- */
+const CLIPS={mision:clipMision,encuentro:clipEncuentro,conservacion:clipCons,conicas:clipConicas,voyager:clipVoyager};
+window.renderFrame=function(name,cfg,beat,tt,tAbs){
+  const c=cfg[name], bd=c.beats[beat]; fondo(); twinkle(tAbs);
+  if(beat===0){ tarjetaTitulo(c,tt); return; }
+  const prog=bd.prog, u=clamp(tt/bd.dur,0,1), q=lerp(prog[0],prog[1],ease(u));
+  cabecera(c.titulo); CLIPS[name](q,beat,tt,c);
+};
+</script></body></html>

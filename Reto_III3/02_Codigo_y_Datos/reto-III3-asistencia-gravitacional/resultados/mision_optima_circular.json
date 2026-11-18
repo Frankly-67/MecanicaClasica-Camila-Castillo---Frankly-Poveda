@@ -1,0 +1,111 @@
+{
+  "fuente_efemerides": "circular",
+  "criterios": {
+    "tol_desajuste_rejilla_km_s": 0.3,
+    "rp_min_RJ": 2.0
+  },
+  "minimo_tiempo_con_limite_C3": {
+    "C3<=100": {
+      "salida": "1977-08-27",
+      "llegada_jupiter": "1979-03-03",
+      "llegada_saturno": "1980-11-14",
+      "tof1_dias": 552.61,
+      "tof2_dias": 622.51,
+      "tiempo_total_anios": 3.217,
+      "C3_km2_s2": 100.0,
+      "vinf_jupiter_entrada_km_s": 10.969,
+      "vinf_jupiter_salida_km_s": 10.969,
+      "desajuste_km_s": 0.0,
+      "delta_grados": 91.8,
+      "rp_radios_jupiter": 5.78,
+      "vinf_saturno_km_s": 15.583,
+      "exacto": {
+        "jd_salida_tdb": 2443383.069578996,
+        "tof1_dias": 552.6058865256201,
+        "tof2_dias": 622.5101965048142
+      }
+    },
+    "C3<=105": {
+      "salida": "1978-10-01",
+      "llegada_jupiter": "1980-03-11",
+      "llegada_saturno": "1981-11-02",
+      "tof1_dias": 527.6,
+      "tof2_dias": 600.79,
+      "tiempo_total_anios": 3.089,
+      "C3_km2_s2": 105.0,
+      "vinf_jupiter_entrada_km_s": 11.783,
+      "vinf_jupiter_salida_km_s": 11.783,
+      "desajuste_km_s": -0.0,
+      "delta_grados": 43.23,
+      "rp_radios_jupiter": 21.89,
+      "vinf_saturno_km_s": 12.691,
+      "exacto": {
+        "jd_salida_tdb": 2443782.6006867345,
+        "tof1_dias": 527.5956522893234,
+        "tof2_dias": 600.7857589604132
+      }
+    },
+    "C3<=115": {
+      "salida": "1978-10-02",
+      "llegada_jupiter": "1980-02-03",
+      "llegada_saturno": "1981-07-13",
+      "tof1_dias": 488.59,
+      "tof2_dias": 525.53,
+      "tiempo_total_anios": 2.777,
+      "C3_km2_s2": 115.0,
+      "vinf_jupiter_entrada_km_s": 13.221,
+      "vinf_jupiter_salida_km_s": 13.221,
+      "desajuste_km_s": 0.0,
+      "delta_grados": 46.12,
+      "rp_radios_jupiter": 15.75,
+      "vinf_saturno_km_s": 15.007,
+      "exacto": {
+        "jd_salida_tdb": 2443784.4458313035,
+        "tof1_dias": 488.5887753105114,
+        "tof2_dias": 525.534482294718
+      }
+    }
+  },
+  "fechas_historicas_evaluadas_con_modelo1": {
+    "Voyager 2": {
+      "salida": "1977-08-20",
+      "llegada_jupiter": "1979-07-09",
+      "llegada_saturno": "1981-08-26",
+      "tof1_dias": 688.33,
+      "tof2_dias": 778.2,
+      "tiempo_total_anios": 4.015,
+      "C3_km2_s2": 85.76,
+      "vinf_jupiter_entrada_km_s": 7.874,
+      "vinf_jupiter_salida_km_s": 8.098,
+      "desajuste_km_s": 0.224,
+      "delta_grados": 86.97,
+      "rp_radios_jupiter": 12.59,
+      "vinf_saturno_km_s": 11.008,
+      "exacto": {
+        "jd_salida_tdb": 2443376.1040299074,
+        "tof1_dias": 688.3333564815111,
+        "tof2_dias": 778.2048842590302
+      }
+    },
+    "Voyager 1": {
+      "salida": "1977-09-05",
+      "llegada_jupiter": "1979-03-05",
+      "llegada_saturno": "1980-11-12",
+      "tof1_dias": 545.96,
+      "tof2_dias": 618.49,
+      "tiempo_total_anios": 3.188,
+      "C3_km2_s2": 105.92,
+      "vinf_jupiter_entrada_km_s": 10.964,
+      "vinf_jupiter_salida_km_s": 11.053,
+      "desajuste_km_s": 0.0893,
+      "delta_grados": 91.72,
+      "rp_radios_jupiter": 5.75,
+      "vinf_saturno_km_s": 15.669,
+      "exacto": {
+        "jd_salida_tdb": 2443392.039446574,
+        "tof1_dias": 545.9646064816043,
+        "tof2_dias": 618.486817129422
+      }
+    }
+  }
+}

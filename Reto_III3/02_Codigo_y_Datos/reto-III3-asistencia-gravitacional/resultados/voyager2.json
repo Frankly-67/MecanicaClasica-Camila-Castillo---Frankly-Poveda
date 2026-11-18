@@ -1,0 +1,75 @@
+{
+  "fuente": "kernel SPICE vgr2_jup230.bsp (NAIF) + DE421",
+  "cobertura": [
+    "1979-06-04 17:13",
+    "1979-07-20 23:44"
+  ],
+  "maximo_acercamiento_al_baricentro_joviano": {
+    "fecha_utc": "1979-07-09 22:28:52",
+    "distancia_km": 721552,
+    "distancia_RJ": 10.093,
+    "publicado_PDS_respecto_al_centro_del_planeta": "1979-07-09 22:29 UTC, 721670 km",
+    "nota": "respecto al centro del planeta: resultados/voyager2_satelites.json"
+  },
+  "hiperbola_osculante_en_periapsis": {
+    "e": 1.3296,
+    "vinf_km_s": 7.608,
+    "delta_formula_grados": 97.55,
+    "inclinacion_respecto_ecliptica_grados": 6.91
+  },
+  "energia_jovicentrica_real": {
+    "vinf_equivalente_inicio_km_s": 7.65,
+    "vinf_equivalente_periapsis_km_s": 7.608,
+    "vinf_equivalente_fin_km_s": 7.578,
+    "distancia_inicio_en_rSOI": 0.577,
+    "distancia_fin_en_rSOI": 0.208
+  },
+  "error_conica_vs_real": {
+    "error_posicion_inicio_km": 94195,
+    "error_posicion_fin_km": 24450,
+    "error_posicion_inicio_RJ": 1.3,
+    "error_posicion_fin_RJ": 0.3,
+    "giro_real_entre_extremos_grados": 96.536,
+    "giro_conica_entre_extremos_grados": 96.584
+  },
+  "heliocentrico_en_los_extremos_del_registro": {
+    "nota": "ambos extremos están dentro de la esfera de influencia; los valores asintóticos están en voyager2_satelites.json",
+    "rapidez_inicio_km_s": 10.021,
+    "rapidez_fin_km_s": 20.782,
+    "energia_solo_Sol_inicio_km2_s2": -121.26,
+    "energia_solo_Sol_fin_km2_s2": 51.16,
+    "energia_total_inicio_km2_s2": -125.91,
+    "energia_total_fin_km2_s2": 38.29
+  },
+  "relacion_de_jacobi": {
+    "Delta_E_total_km2_s2": 164.2,
+    "n_medio_por_Delta_lz_km2_s2": 173.21,
+    "integral_w_dlz_km2_s2": 164.83,
+    "w_sobre_n_en_periapsis": 0.9517,
+    "distancia_Sol_Jupiter_UA": 5.33,
+    "diferencia_relativa_con_n_medio": 0.0549,
+    "diferencia_relativa_con_w_instantanea": 0.0038,
+    "termino_radial_km2_s2": -0.15,
+    "resto_fuerzas_no_incluidas_km2_s2": -0.48,
+    "nota_resto": "trabajo de lo que no está en el potencial Sol + Júpiter puntual: satélites, J2 y maniobra (voyager2_satelites.json)",
+    "Delta_E_sin_potencial_de_Jupiter_km2_s2": 172.42
+  },
+  "modelo1_en_fechas_reales": {
+    "circular": {
+      "vinf_entrada_km_s": 7.874,
+      "vinf_salida_km_s": 8.098,
+      "desajuste_km_s": 0.224,
+      "delta_grados": 86.97,
+      "rp_RJ": 12.59,
+      "C3_km2_s2": 85.8
+    },
+    "de421": {
+      "vinf_entrada_km_s": 7.889,
+      "vinf_salida_km_s": 7.791,
+      "desajuste_km_s": -0.098,
+      "delta_grados": 96.82,
+      "rp_RJ": 9.72,
+      "C3_km2_s2": 103.0
+    }
+  }
+}

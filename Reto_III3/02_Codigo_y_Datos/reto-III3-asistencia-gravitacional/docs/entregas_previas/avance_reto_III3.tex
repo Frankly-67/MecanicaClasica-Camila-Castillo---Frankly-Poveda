@@ -1,0 +1,105 @@
+% Compilar con XeLaTeX o LuaLaTeX (en Overleaf: Menú > Compilador).
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[spanish]{babel}
+\else
+  \usepackage{fontspec}
+  \usepackage{polyglossia}
+  \setmainlanguage{spanish}
+\fi
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+
+\pagestyle{empty}
+
+\title{Reto III.3: asistencia gravitacional en Júpiter\\ Identificación del problema}
+\author{Frankly Giovanni Poveda Pinzón \and Camila Castillo López}
+\date{2 de octubre de 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{El problema}
+
+Se quiere diseñar un sobrevuelo de Júpiter que cambie la órbita de una sonda que viene de
+la Tierra para que pueda continuar hasta Saturno. El problema se debe resolver con dos
+aproximaciones: cónicas empalmadas, donde en cada tramo actúa un solo cuerpo, e integración
+numérica con todos los cuerpos actuando a la vez. La pregunta que pide el reto es qué
+cantidad se conserva durante el encuentro en cada sistema de referencia y cuánto error
+introduce la aproximación de cónicas empalmadas.
+
+\section{El sistema}
+
+Los cuerpos son el Sol, Júpiter, Saturno y la sonda. La masa de la sonda es despreciable,
+así que no afecta a los planetas y se trata de un problema restringido: los planetas siguen
+órbitas conocidas y lo que se busca es el movimiento de la sonda. Si se trabaja en el plano
+de la eclíptica quedan dos grados de libertad, la posición $(x,y)$ de la sonda.
+
+Las escalas son muy distintas. Júpiter está a unas 5.2~UA del Sol y se mueve a unos
+13~km/s. La región donde domina su gravedad (esfera de influencia, $r \approx a_J
+(m_J/M_\odot)^{2/5}$) es de unos 48 millones de km, que son unos 670 radios de Júpiter y
+menos del 7\,\% de su distancia al Sol. Una sonda que llega con unos 8~km/s relativos a
+Júpiter tarda del orden de 140 días en cruzar esa región, mientras que el viaje completo
+dura años. Esta separación de escalas es lo que, en principio, justifica empalmar cónicas.
+
+\section{Qué se conserva en cada sistema de referencia}
+
+En el sistema de Júpiter, si se ignora el Sol durante el encuentro, la sonda describe una
+hipérbola. Se conservan la energía y el momento angular respecto a Júpiter, por lo que la
+rapidez de llegada y la de salida lejos del planeta son iguales ($v_\infty$). Lo único que
+cambia es la dirección, que gira un ángulo $\delta$ dado por
+\[
+e = 1 + \frac{r_p v_\infty^2}{\mu_J}, \qquad \sin\frac{\delta}{2} = \frac{1}{e},
+\]
+donde $r_p$ es la distancia de máximo acercamiento.
+
+En el sistema del Sol la velocidad de la sonda es $\vec v = \vec v_J + \vec v_\infty$. Al
+girar $\vec v_\infty$ cambia la magnitud de $\vec v$, así que la energía de la sonda respecto
+al Sol no se conserva. Esa es la ganancia de la asistencia, y la energía sale de la órbita de
+Júpiter.
+
+En el sistema que rota con Júpiter (problema restringido de tres cuerpos) existe una
+cantidad conservada, la constante de Jacobi. Lejos de Júpiter se puede aproximar por el
+parámetro de Tisserand, que debería ser igual antes y después del encuentro. Pensamos usarla
+para comprobar la simulación y para ver cuánto se aparta de ella el modelo de cónicas.
+
+\section{Hipótesis iniciales}
+
+Para el primer modelo se piensa suponer que los planetas siguen órbitas circulares y que
+todo ocurre en el plano de la eclíptica. El cambio de la referencia del Sol a la de Júpiter
+se haría en el borde de la esfera de influencia, y visto desde el Sol el encuentro se
+trataría como instantáneo. Júpiter se toma como masa puntual y no se considera ninguna
+maniobra con motor durante el sobrevuelo, de modo que la rapidez $v_\infty$ debe ser la misma
+a la entrada y a la salida. Se desprecian la relatividad, la presión de radiación y los
+planetas distintos de Júpiter y Saturno. Todavía falta decidir qué energía de lanzamiento
+se considera disponible, y es posible que haya que probar varios valores.
+
+\section{Dónde esperamos que falle la aproximación}
+
+Una cuenta rápida muestra que en el borde de la esfera de influencia la atracción del Sol
+sobre la sonda es unas cuatro veces mayor que la de Júpiter. Esto parece contradecir la idea
+de ignorar al Sol, pero lo que importa en el sistema de Júpiter es la diferencia entre la
+atracción del Sol sobre la sonda y sobre Júpiter, que es mucho menor. Aun así esperamos que
+el error crezca cuando $v_\infty$ es pequeña, porque la sonda pasa más tiempo cerca del borde,
+y que el resultado dependa de dónde se haga el empalme.
+
+\section{Cómo pensamos abordarlo}
+
+Primero se implementará el modelo de cónicas: problema de Lambert para los tramos
+Tierra--Júpiter y Júpiter--Saturno, y la hipérbola para el encuentro. Con eso se buscarán
+fechas de salida que permitan el viaje sin motor. Como referencia se usará la misión
+Voyager~2, que salió en agosto de 1977 y pasó por Júpiter en julio de 1979, pero sus datos
+solo se usarán para comparar al final. Después se integrarán numéricamente las ecuaciones
+de movimiento con REBOUND, partiendo del mismo encuentro, y se compararán los dos modelos
+variando $v_\infty$ y el radio de empalme. Para validar se revisará la conservación de la
+energía total y de la constante de Jacobi, los casos límite (masa de Júpiter tendiendo a
+cero) y la convergencia numérica.
+
+\end{document}

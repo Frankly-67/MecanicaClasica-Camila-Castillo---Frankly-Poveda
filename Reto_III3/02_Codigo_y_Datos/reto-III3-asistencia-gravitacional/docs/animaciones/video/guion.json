@@ -1,0 +1,184 @@
+{
+ "mision": {
+  "titulo": "De la Tierra a Saturno",
+  "sub": "La misión óptima del Modelo 1, con efemérides reales",
+  "beats": [
+   {
+    "id": "titulo",
+    "t": "Así se planea una misión como la de las Voyager: de la Tierra a Saturno, pasando por Júpiter."
+   },
+   {
+    "id": "hohmann",
+    "t": "Ir directo con una transferencia de Hohmann tarda unos seis años, y exige un lanzamiento muy energético."
+   },
+   {
+    "id": "ida",
+    "t": "Con la asistencia, la sonda sale el tres de septiembre de mil novecientos setenta y siete, con un C3 de cien kilómetros cuadrados por segundo al cuadrado, y viaja hacia Júpiter."
+   },
+   {
+    "id": "encuentro",
+    "t": "El doce de abril de mil novecientos setenta y nueve pasa a casi seis radios jovianos de Júpiter, con una v infinito de nueve coma ocho kilómetros por segundo."
+   },
+   {
+    "id": "salto",
+    "t": "Su rapidez respecto al Sol salta de once coma seis a veintidós coma dos kilómetros por segundo, sin gastar combustible."
+   },
+   {
+    "id": "vuelta",
+    "t": "Con esa energía extra, cruza hasta Saturno, donde llega el primero de febrero de mil novecientos ochenta y uno."
+   },
+   {
+    "id": "resumen",
+    "t": "En total son tres coma cuatro años, casi la mitad que con Hohmann, y con un lanzamiento menos exigente: un C3 de cien, en lugar de ciento seis."
+   },
+   {
+    "id": "datos",
+    "t": "Las posiciones de los planetas son las de la efeméride DE421 del JPL, y la trayectoria es la del modelo de cónicas empalmadas del informe."
+   }
+  ]
+ },
+ "encuentro": {
+  "titulo": "Un encuentro, dos sistemas",
+  "sub": "Hipérbola en Júpiter, suma de velocidades en el Sol",
+  "beats": [
+   {
+    "id": "titulo",
+    "t": "Un mismo encuentro, visto desde dos sistemas de referencia. Primero, desde Júpiter."
+   },
+   {
+    "id": "hiperbola",
+    "t": "Para la sonda solo importa la atracción de Júpiter. Su órbita es una hipérbola, y llega y sale con la misma rapidez, v infinito."
+   },
+   {
+    "id": "giro",
+    "t": "Lo único que cambia es la dirección. La velocidad gira un ángulo delta, que depende del periapsis: con casi seis radios jovianos, delta vale noventa y ocho grados."
+   },
+   {
+    "id": "sol",
+    "t": "Ahora, desde el Sol. Júpiter se mueve a casi trece kilómetros por segundo y arrastra la escena con él."
+   },
+   {
+    "id": "triangulo",
+    "t": "La velocidad de la sonda es la de Júpiter más v infinito. Al girar v infinito, la suma cambia de módulo."
+   },
+   {
+    "id": "numeros",
+    "t": "Antes del encuentro, once coma seis kilómetros por segundo. Después, veintidós coma dos."
+   },
+   {
+    "id": "energia",
+    "t": "Respecto al Sol, la energía no se conserva: la sonda gana ciento ochenta kilómetros cuadrados por segundo al cuadrado. Es la velocidad de Júpiter por el cambio de v infinito."
+   },
+   {
+    "id": "cierre",
+    "t": "Es lo que dice la mecánica clásica: Júpiter cede una cantidad despreciable de su energía orbital, y la sonda la recibe."
+   }
+  ]
+ },
+ "conservacion": {
+  "titulo": "Qué se conserva: h = E − nℓz",
+  "sub": "Simulación de N cuerpos con REBOUND",
+  "beats": [
+   {
+    "id": "titulo",
+    "t": "¿Qué se conserva durante el encuentro? Veámoslo en una simulación de N cuerpos con REBOUND."
+   },
+   {
+    "id": "energia",
+    "t": "Hay un Sol, un Júpiter en órbita circular y una sonda. La energía de la sonda respecto al Sol sube en el encuentro, de menos ciento cincuenta y siete a menos cuarenta y uno."
+   },
+   {
+    "id": "salto",
+    "t": "Ahí, cerca de Júpiter, es donde cambia casi todo. Fuera de la esfera de influencia, la energía vuelve a ser casi constante."
+   },
+   {
+    "id": "momento",
+    "t": "El momento angular, multiplicado por n, también cambia. Y cambia exactamente en la misma cantidad."
+   },
+   {
+    "id": "h",
+    "t": "Por eso su diferencia, h igual a E menos n por ele zeta, es una línea recta. Se conserva, con una variación relativa de dos por diez a la menos catorce."
+   },
+   {
+    "id": "simetria",
+    "t": "Es la simetría del problema: en el sistema que rota con Júpiter, el lagrangiano no depende del tiempo. De ahí sale que delta E es n por delta ele zeta."
+   },
+   {
+    "id": "voyager",
+    "t": "Con Voyager 2 real, usando el movimiento medio de Júpiter, la relación falla un cinco coma cinco por ciento, porque Júpiter está cerca del afelio. Con su velocidad angular instantánea, solo un cero coma cuatro por ciento."
+   }
+  ]
+ },
+ "conicas": {
+  "titulo": "Cuándo fallan las cónicas",
+  "sub": "El error de tratar el encuentro como instantáneo",
+  "beats": [
+   {
+    "id": "titulo",
+    "t": "El método de cónicas empalmadas trata el encuentro como instantáneo, visto desde el Sol. ¿Cuándo deja de funcionar?"
+   },
+   {
+    "id": "lento",
+    "t": "Si la sonda llega despacio, tarda mucho en cruzar la esfera de influencia de Júpiter. Con dos coma cinco kilómetros por segundo, son más de cuatrocientos días."
+   },
+   {
+    "id": "avance",
+    "t": "En ese tiempo, Júpiter avanza treinta y siete grados en su órbita. Con quince kilómetros por segundo, solo seis."
+   },
+   {
+    "id": "curva",
+    "t": "El error en la ganancia de energía, comparado con la integración de N cuerpos, baja a medida que aumenta la velocidad."
+   },
+   {
+    "id": "valores",
+    "t": "Es de diecisiete coma cinco por ciento con dos coma cinco kilómetros por segundo, y de cero coma trece por ciento con quince."
+   },
+   {
+    "id": "umbral",
+    "t": "Queda por debajo del dos por ciento desde unos ocho kilómetros por segundo, y supera el diez por ciento bajo tres."
+   },
+   {
+    "id": "conclusion",
+    "t": "Sirven para el diseño preliminar si v infinito es grande. Si es pequeña, hay que integrar."
+   }
+  ]
+ },
+ "voyager": {
+  "titulo": "Voyager 2: la trayectoria real",
+  "sub": "Datos reales del kernel SPICE de NAIF",
+  "beats": [
+   {
+    "id": "titulo",
+    "t": "Ahora, el caso real: Voyager 2, en julio de mil novecientos setenta y nueve."
+   },
+   {
+    "id": "datos",
+    "t": "Los datos son la trayectoria reconstruida por la NASA, del cuatro de junio al veinte de julio. Nunca se usaron para ajustar el modelo."
+   },
+   {
+    "id": "llegada",
+    "t": "La sonda llega a Júpiter desde más de doscientos radios jovianos, pasando entre los satélites galileanos."
+   },
+   {
+    "id": "periapsis",
+    "t": "El máximo acercamiento es el nueve de julio, a las veintidós horas veintiocho, a diez coma cero nueve radios jovianos. Coincide con el valor publicado."
+   },
+   {
+    "id": "puntual",
+    "t": "Con Júpiter como masa puntual, el modelo se separa de la realidad, y no reproduce la caída de la energía."
+   },
+   {
+    "id": "maniobra",
+    "t": "La causa: unas dos horas después hay un empuje de dos coma ocho milímetros por segundo cuadrado, durante setenta y seis minutos. Es una maniobra de trece metros por segundo."
+   },
+   {
+    "id": "completo",
+    "t": "Con los satélites galileanos, el achatamiento de Júpiter y esa maniobra, el modelo sigue a la sonda: siete coma cinco siete ocho, contra siete coma cinco siete siete."
+   },
+   {
+    "id": "cierre",
+    "t": "Una respuesta que parece física solo vale si se contrasta con datos reales."
+   }
+  ]
+ }
+}

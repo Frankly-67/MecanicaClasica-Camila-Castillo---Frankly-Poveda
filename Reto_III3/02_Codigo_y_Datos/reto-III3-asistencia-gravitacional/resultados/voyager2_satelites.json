@@ -1,0 +1,142 @@
+{
+  "A_sobrevuelos_satelites": {
+    "Calisto": {
+      "fecha_utc": "1979-07-08 12:21:33",
+      "distancia_km": 215281,
+      "publicado_utc": "1979-07-08 12:21",
+      "publicado_km": 214930,
+      "diferencia_%": 0.163
+    },
+    "Ganímedes": {
+      "fecha_utc": "1979-07-09 07:14:44",
+      "distancia_km": 62078,
+      "publicado_utc": "1979-07-09 07:14",
+      "publicado_km": 62130,
+      "diferencia_%": -0.084
+    },
+    "Europa": {
+      "fecha_utc": "1979-07-09 17:51:25",
+      "distancia_km": 205641,
+      "publicado_utc": "1979-07-09 17:53",
+      "publicado_km": 205720,
+      "diferencia_%": -0.039
+    },
+    "Ío": {
+      "fecha_utc": "1979-07-09 23:17:45",
+      "distancia_km": 1129728,
+      "publicado_utc": "1979-07-09 23:17",
+      "publicado_km": 1129900,
+      "diferencia_%": -0.015
+    }
+  },
+  "A_maximo_acercamiento_a_jupiter": {
+    "baricentro_del_sistema": {
+      "fecha_utc": "1979-07-09 22:28:52",
+      "distancia_km": 721552
+    },
+    "centro_del_planeta": {
+      "fecha_utc": "1979-07-09 22:29:01",
+      "distancia_km": 721673
+    },
+    "publicado": {
+      "fecha_utc": "1979-07-09 22:29",
+      "distancia_km": 721670
+    }
+  },
+  "B_maniobra": {
+    "inicio_min_tras_periapsis": 129.9,
+    "fin_min_tras_periapsis": 206.5,
+    "inicio_utc": "1979-07-10 00:38:44",
+    "fin_utc": "1979-07-10 01:55:23",
+    "duracion_min": 76.6,
+    "aceleracion_mm_s2": 2.833,
+    "delta_v_m_s": 13.03,
+    "angulo_con_velocidad_jovicentrica_grados": 163.0,
+    "distancia_a_jupiter_RJ": 10.32,
+    "rapidez_jovicentrica_km_s": 20.03,
+    "cambio_energia_jovicentrica_km2_s2": -0.25,
+    "residual_fuera_de_la_maniobra_mm_s2": {
+      "mediana": 0.00056,
+      "maximo": 0.0082,
+      "maximo_en_min_tras_periapsis": -891.0
+    },
+    "publicado": "encendido de 76 minutos, unas dos horas después del máximo acercamiento (Morrison y Samz, Voyage to Jupiter, NASA SP-439, 1980)"
+  },
+  "C_integracion_desde_4_jun_1979": {
+    "puntual": {
+      "error_en_periapsis_km": 1305,
+      "error_final_km": 67582,
+      "vinf_eq_final_km_s": 7.64
+    },
+    "satelites": {
+      "error_en_periapsis_km": 331,
+      "error_final_km": 29161,
+      "vinf_eq_final_km_s": 7.6109
+    },
+    "satelites+J2": {
+      "error_en_periapsis_km": 314,
+      "error_final_km": 27626,
+      "vinf_eq_final_km_s": 7.6109
+    },
+    "satelites+J2+maniobra": {
+      "error_en_periapsis_km": 314,
+      "error_final_km": 5615,
+      "vinf_eq_final_km_s": 7.578
+    }
+  },
+  "C_tramos_balisticos": {
+    "puntual": {
+      "tramo1_4jun_a_maniobra_error_km": 1463,
+      "tramo2_maniobra_a_20jul_error_km": 793
+    },
+    "satelites+J2": {
+      "tramo1_4jun_a_maniobra_error_km": 255,
+      "tramo2_maniobra_a_20jul_error_km": 6
+    }
+  },
+  "D_caida_energia_jovicentrica": {
+    "vinf_eq_real_inicio_km_s": 7.6499,
+    "vinf_eq_real_fin_km_s": 7.5777,
+    "caida_total_km_s": -0.0722,
+    "marea_solar_km_s": -0.0099,
+    "satelites_y_J2_km_s": -0.0291,
+    "maniobra_km_s": -0.0329,
+    "sin_explicar_km_s": -0.0003
+  },
+  "E_prolongacion_200_dias": {
+    "antes": {
+      "fecha": "1978-11-16",
+      "distancia_a_jupiter_rSOI": 3.47,
+      "energia_heliocentrica_km2_s2": -121.8,
+      "excentricidad": 0.726,
+      "semieje_UA": 3.64,
+      "tisserand": 2.5759
+    },
+    "inicio_registro": {
+      "fecha": "1979-06-04",
+      "distancia_a_jupiter_rSOI": 0.58,
+      "energia_heliocentrica_km2_s2": -121.26,
+      "excentricidad": 0.749,
+      "semieje_UA": 3.66,
+      "tisserand": 2.5277
+    },
+    "fin_registro": {
+      "fecha": "1979-07-20",
+      "distancia_a_jupiter_rSOI": 0.21,
+      "energia_heliocentrica_km2_s2": 51.16,
+      "excentricidad": 1.574,
+      "semieje_UA": -8.67,
+      "tisserand": 2.5337
+    },
+    "despues": {
+      "fecha": "1980-02-05",
+      "distancia_a_jupiter_rSOI": 3.06,
+      "energia_heliocentrica_km2_s2": 26.33,
+      "excentricidad": 1.299,
+      "semieje_UA": -16.85,
+      "tisserand": 2.6699
+    },
+    "ganancia_de_energia_asintotica_km2_s2": 148.1,
+    "cambio_relativo_tisserand": 0.0365
+  }
+}

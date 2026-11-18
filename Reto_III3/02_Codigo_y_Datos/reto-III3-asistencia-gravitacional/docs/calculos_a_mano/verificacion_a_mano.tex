@@ -1,0 +1,120 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage{fontspec}
+\usepackage{polyglossia}\setdefaultlanguage{spanish}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}\geometry{letterpaper,margin=2.2cm}
+\usepackage{fancyhdr}\pagestyle{fancy}
+\fancyhf{}\lhead{\small Reto III.3: verificación a mano}\rhead{\small Poveda y Castillo}\cfoot{\thepage}
+\usepackage{enumitem}\setlist{itemsep=2pt}
+\usepackage{booktabs,array}
+\newcommand{\RJ}{R_J}\newcommand{\vinf}{v_\infty}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\newcommand{\ok}{\textbf{Coincide.}\ }
+\sloppy\setlength{\emergencystretch}{3em}
+\begin{document}
+{\LARGE\bfseries Verificación a mano de los cálculos del informe}\\[2pt]
+Reto III.3. Asistencia gravitacional en Júpiter. Mecánica Clásica 2026-B\\
+\small Cada cifra del informe se rehace aquí con fórmulas de curso y una calculadora, usando solo datos de entrada (efemérides, constantes), no los resultados del código. Al final se dice qué no se puede hacer a mano y cómo se comprobó de otra manera.
+
+\paragraph{Constantes.} $GM_\odot=1.3271244\times10^{11}$, $GM_J=1.26712765\times10^{8}$ km$^3$/s$^2$; $\RJ=71\,492$ km; 1 UA $=1.495979\times10^8$ km; $a_J=5.202887$ UA. Entonces $GM_J/GM_\odot=9.5479\times10^{-4}$ y $GM_\odot/GM_J=1047.3$.
+
+\section{Introducción}
+\textbf{V1. Hohmann a Saturno, <<unos seis años>>.} Semieje de la elipse: $a=(1+9.5367)/2=5.2684$ UA. El tiempo de vuelo es medio período, $t=\tfrac12a^{3/2}$ años $=\tfrac12(5.2684)(2.2952)=6.05$ años. \ok
+
+\textbf{V2. Duración de las Voyager, <<tres a cuatro años>>.} Voyager 2: 20 ago 1977 a 26 ago 1981 $=4.02$ años. Voyager 1: 5 sep 1977 a 12 nov 1980 $=3.19$ años. Óptimo del modelo: $586.09+661.61=1247.70$ d $=1247.70/365.25=3.416$ años. \ok
+
+\textbf{V3. <<Unos $10\,R_J$>>.} $721\,552/71\,492=10.09\,R_J$. \ok
+
+\section{Metodología}
+\textbf{V4. Esfera de influencia de Laplace, $674\,R_J$.} $\ln(9.5479\times10^{-4})=-6.9535$; $\times0.4=-2.7814$; $e^{-2.7814}=0.06193$. $r_{SOI}=0.06193\times7.7834\times10^8=4.820\times10^7$ km; $/71\,492=674\,R_J$. \ok\\
+Hill: $(9.5479\times10^{-4}/3)^{1/3}=0.06829$; $r_H=5.315\times10^7$ km $=743\,R_J$. \ok
+
+\textbf{V5. Por qué esa fórmula (comprobación de la deducción).} En $\rho=r_{SOI}$, perturbación solar sobre atracción de Júpiter, en el sistema de Júpiter: $\dfrac{M_1}{M_2}\Big(\dfrac\rho a\Big)^3=1047.3\times(0.06193)^3=1047.3\times2.375\times10^{-4}=0.2489$. Perturbación de Júpiter sobre atracción del Sol, en el sistema del Sol: $\dfrac{M_2}{M_1}\Big(\dfrac a\rho\Big)^2=9.5479\times10^{-4}/(0.06193)^2=9.5479\times10^{-4}/3.835\times10^{-3}=0.2489$. Las dos razones son iguales, que es la condición que define $r_{SOI}$. \ok
+
+\textbf{V6. Barrido de $4.2\times10^6$ combinaciones.} Fechas de salida cada 4 d entre 1976 y 1980: $1461/4\to366$. $T_1$ de 400 a 1100 d cada 8 d: $88$. $T_2$ de 400 a 3000 d cada 20 d: $131$. Producto: $366\times88\times131=4\,219\,248\approx4.2\times10^6$. \ok
+
+\textbf{V7. Validación de la lectura del kernel (sec. 2.4).} Distancia: $|721\,673-721\,670|/721\,670=4\times10^{-6}$. Satélites, $(\text{kernel}-\text{publicado})/\text{publicado}$: Calisto $(215\,281-214\,930)/214\,930=+0.16\,\%$; Ganímedes $(62\,078-62\,130)/62\,130=-0.084\,\%$; Europa $(205\,641-205\,720)/205\,720=-0.038\,\%$; Ío $(1\,129\,728-1\,129\,900)/1\,129\,900=-0.015\,\%$. Todos $\le0.2\,\%$. \ok
+
+\section{Resultados}
+\subsection*{Vuelo óptimo (C3 $\le100$; sec. 3.1, 3.2, fig. 2)}
+Datos de entrada, de DE421: distancias al Sol $r_1=1.0086$ UA (Tierra, 3 sep 1977), $r_2=5.3026$ UA (Júpiter, 12 abr 1979), $r_3=9.5403$ UA (Saturno, 1 feb 1981); rapideces $v_E=29.524$, $v_J=12.816$ km/s. De la solución de Lambert, $v_{ent}=11.611$ y $v_{sal}=22.237$ km/s; $\vinf=9.844$ km/s.
+
+\textbf{V8. Fechas.} 3 sep 1977 $+586.09$ d: hasta 3 sep 1978 son 365 d; faltan 221 d, que llevan al 12 abr 1979. Luego $+661.61$ d: hasta 12 abr 1980 son 366 d (año bisiesto) y faltan $295.6$ d, que llevan al 1 feb 1981. \ok
+
+\textbf{V9. Energía en el tramo Tierra--Júpiter.} La energía por unidad de masa se conserva sobre la cónica: $v_1^2=v_{ent}^2+2GM_\odot(1/r_1-1/r_2)$. $GM_\odot/r_1=879.56$, $GM_\odot/r_2=167.30$. $v_1^2=134.81+2(879.56-167.30)=134.81+1424.52=1559.3$, $v_1=39.49$ km/s. \ok (código: 39.488).\\
+C3: la sonda sale casi en la dirección de $\vec v_E$, así que $C3\approx(39.49-29.52)^2=99.4$, frente a 100. Los $0.6\,\%$ de diferencia vienen de que los vectores no son exactamente paralelos (inclinación). \ok
+
+\textbf{V10. Energía en el tramo Júpiter--Saturno.} $v_4^2=v_{sal}^2+2GM_\odot(1/r_3-1/r_2)=494.50+2(92.99-167.30)=494.50-148.62=345.87$, $v_4=18.60$ km/s \ok (código: 18.597).
+
+\textbf{V11. Triángulo de velocidades.} En el sistema del Sol, $\vec v=\vec v_J+\vec v_\infty$, y por la ley de cosenos $\cos\theta=(v^2-v_J^2-\vinf^2)/(2v_J\vinf)$, con $v_J^2=164.26$, $\vinf^2=96.90$, $2v_J\vinf=252.33$:\\
+entrada: $\cos\theta_{ent}=(134.81-164.26-96.90)/252.33=-0.5008\Rightarrow\theta_{ent}=120.05^\circ$;\\
+salida: $\cos\theta_{sal}=(494.50-164.26-96.90)/252.33=0.9247\Rightarrow\theta_{sal}=22.37^\circ$.\\
+El vector $\vec v_\infty$ gira hacia la dirección de $\vec v_J$ unos $97.7^\circ$ visto en el plano. El valor exacto en 3D es $97.94^\circ$ (la diferencia de $0.26^\circ$ es por la inclinación; ver V12). \ok
+
+\textbf{V12. Hipérbola.} El vector cambio de velocidad mide $|\Delta\vec v_\infty|=14.852$ km/s. Para un giro $\delta$ con módulo constante, $|\Delta\vec v_\infty|=2\vinf\sin(\delta/2)$, entonces $\sin(\delta/2)=14.852/19.688=0.7544$, $\delta/2=48.97^\circ$, $\delta=97.94^\circ$. \ok\\
+Con $r_p=5.96\,R_J=4.2609\times10^5$ km: $e=1+r_p\vinf^2/GM_J=1+4.2609\times10^5(96.90)/1.26713\times10^8=1+0.3258=1.3258$. Y $1/e=0.7543$, que reproduce el seno anterior. Es decir, el $r_p$ obtenido del barrido es consistente con el giro que exige la geometría. \ok\\
+Rapidez en el periapsis: $v_p=\sqrt{\vinf^2+2GM_J/r_p}=\sqrt{96.90+594.77}=26.3$ km/s. \ok
+
+\textbf{V13. Ganancia de energía <<de 11.6 a 22.2>>.} $\Delta E=\tfrac12(494.50-134.81)=179.8$ km$^2$/s$^2$. Otra forma: como $|\vec v_\infty|$ no cambia, $\Delta E=\vec v_J\cdot(\vec u_{sal}-\vec u_{ent})$, es decir $12.816\times14.03=179.8$ con $14.03$ km/s la componente de $\Delta\vec v_\infty$ a lo largo de $\vec v_J$ (máximo posible $2\vinf=19.7$). Cota superior de la ganancia: $2v_J\vinf=252.3$; se obtiene el $71\,\%$. \ok
+
+\subsection*{Cuadro 2: Voyager 1 y 2 con el Modelo 1}
+\textbf{V14. $\delta$ y $r_p$ de Voyager 2.} Datos: $\vinf^{ent}=7.8886$, $\vinf^{sal}=7.7909$, $|\Delta\vec v_\infty|=11.7275$ km/s. Ley de cosenos: $\cos\delta=(7.8886^2+7.7909^2-11.7275^2)/(2\cdot7.8886\cdot7.7909)=(62.23+60.70-137.53)/122.92=-0.1188$, $\delta=96.82^\circ$ .\\
+$\vinf$ medio $=7.840$; $\sin(48.41^\circ)=0.7479$; $1/0.7479-1=0.3371$; $r_p=GM_J(0.3371)/\vinf^2=1.26713\times10^8(0.3371)/61.47=6.949\times10^5$ km $=9.72\,R_J$. \ok
+
+\textbf{V15. Voyager 1.} $\vinf^{ent}=10.9510$, $\vinf^{sal}=10.9718$, $|\Delta\vec v_\infty|=16.5929$. $\cos\delta=(119.93+120.38-275.31)/240.30=-0.1457$, $\delta=98.38^\circ$ . $\vinf$ medio $=10.961$; $\sin(49.19^\circ)=0.7569$; $1/0.7569-1=0.3212$; $r_p=1.26713\times10^8(0.3212)/120.15=3.388\times10^5$ km $=4.74\,R_J$. \ok
+
+\textbf{V16. Errores de $r_p$ respecto al real.} Voyager 2: DE421 $(9.72-10.09)/10.09=-3.7\,\%$; circular $(12.59-10.09)/10.09=+24.8\,\%\approx25\,\%$. Voyager 1: DE421 $(4.74-4.88)/4.88=-2.9\,\%$; circular $+17.8\,\%$. El texto dice <<menos del 4\,\%>> con DE421: . (Las cifras circulares requieren la efeméride circular; se comprobaron solo con el código.)
+
+\subsection*{Voyager 2 con datos reales (sec. 3.2, 3.5)}
+\textbf{V17. Hipérbola osculante en el periapsis.} $\vinf=7.608$ km/s, $r_p=721\,552$ km: $e=1+721\,552(57.88)/1.26713\times10^8=1+0.3296=1.3296$. \ok $\delta=2\arcsin(1/1.3296)=2(48.77^\circ)=97.55^\circ$ . $v_p=\sqrt{57.88+2(1.26713\times10^8)/721\,552}=\sqrt{57.88+351.22}=20.23$ km/s.
+
+\textbf{V18. Tiempo desde el 4 de junio hasta el periapsis.} Semieje de la hipérbola $a_h=GM_J/\vinf^2=2.189\times10^6$ km. Al inicio $r=0.577\,r_{SOI}=0.577(674.3)(71\,492)=2.782\times10^7$ km. $\cosh H=(r/a_h+1)/e=(12.71+1)/1.3296=10.31$, $H=3.024$. Ecuación de Kepler hiperbólica: $t=\sqrt{a_h^3/GM_J}\,(e\sinh H-H)=2.877\times10^5\,(13.63-3.02)\text{ s}=3.05\times10^6$ s $=35.4$ d. Dato real: del 4 jun 17:13 al 9 jul 22:28 hay $35.2$ d. \ok\\
+Después del periapsis: al final $r=0.208\,r_{SOI}=1.003\times10^7$ km, $\cosh H=(4.58+1)/1.3296=4.20$, $H=2.113$, $\sinh H=4.075$, $e\sinh H=5.42$, $t=2.877\times10^5(5.42-2.11)=9.5\times10^5$ s $=11.0$ d. Dato real: del 9 jul 22:28 al 20 jul 23:44 hay $11.05$ d. \ok
+
+\textbf{V19. Excentricidad de Júpiter y $\omega/n$.} $\omega=h_J/R^2=\sqrt{GM_\odot a(1-e^2)}/R^2$ y $n=\sqrt{GM_\odot/a^3}$, entonces $\omega/n=\sqrt{1-e^2}\,(a/R)^2$. Con $e=0.048$, $R=5.33$ UA: $\sqrt{1-0.0023}=0.9988$; $(5.2029/5.33)^2=0.9529$; producto $0.9517$. \ok (informe: 0.952).
+
+\textbf{V20. Relación $\Delta E=n\Delta\ell_z$ con datos reales.} $n=2\pi/(11.862\times3.15576\times10^7)=1.6785\times10^{-8}$ rad/s. Con $\Delta E=164.2$, esto implica $\Delta\ell_z=164.2/n=9.78\times10^9$ km$^2$/s. Con $n$ medio: $n\Delta\ell_z=173.2$ (dato guardado); diferencia $(173.2-164.2)/164.2=5.5\,\%$. \ok\\
+Con $\omega$ instantánea: $\int\omega\,d\ell_z\approx0.9517\times173.2=164.8$; diferencia $(164.8-164.2)/164.2=0.4\,\%$. \ok (el valor guardado, 164.83, integra $\omega(t)$ punto a punto; $0.9517\times173.2=164.8$ es solo el atajo con el valor en el periapsis).\\
+Esto prueba que el 5.5\,\% es la excentricidad: $1-0.9517=4.8\,\%$ y el resto es el término radial ($-0.15$) más fuerzas no incluidas ($-0.48$).
+
+\textbf{V21. Energías heliocéntricas y Tisserand.} Antes: $E=-121.8$, $a=-GM_\odot/(2E)=1.3271\times10^{11}/243.6=5.448\times10^8$ km $=3.642$ UA. Después: $E=+26.3$, $a=-GM_\odot/(2E)=-2.523\times10^9$ km $=-16.87$ UA (hipérbola, escapa) y con $e=1.30$ el perihelio $q=|a|(e-1)=16.87(0.30)=5.06$ UA, cerca de la órbita de Júpiter (5.2 UA), como debe ser tras el encuentro. \ok\\
+Tisserand: $T=a_J/a+2\cos i\sqrt{(a/a_J)(1-e^2)}$, con $\cos i=\cos6.91^\circ=0.9927$.\\
+Después: $a_J/a=-0.3085$; $(a/a_J)(1-e^2)=(-3.2416)(1-1.69)=2.2367$, raíz $1.4956$; $T=-0.3085+2(0.9927)(1.4956)=2.661$ (informe: 2.670; diferencia $0.3\,\%$, dentro de la precisión de $e$ e $i$ usados). \ok\\
+Antes (despejando $e$ de $T=2.576$): $a_J/a=1.4286$; $\sqrt{(a/a_J)(1-e^2)}=(2.576-1.4286)/(2\cdot0.9927)=0.5778$; $1-e^2=0.5778^2/0.7000=0.4771$; $e=0.723$; perihelio $q=a(1-e)=3.642(0.277)=1.01$ UA, que es la órbita de la Tierra, donde salió la sonda. \ok
+
+\textbf{V22. Maniobra de 76.6 min.} $\Delta v=a\,t=2.833\times10^{-6}\text{ km/s}^2\times(76.6\times60=4596\text{ s})=0.01302$ km/s $=13.0$ m/s. \ok\\
+Como fracción de $\vinf$: $13.02/7608=0.17\,\%\approx0.2\,\%$. \ok\\
+Cambio de energía jovicéntrica: el empuje forma $163^\circ$ con la velocidad ($v=20.03$ km/s): $\Delta\varepsilon=v\,\Delta v\cos163^\circ=20.03(0.01302)(-0.9563)=-0.249$ km$^2$/s$^2$ \ok (guardado: $-0.25$).\\
+En $\vinf$: $\Delta\vinf=\Delta\varepsilon/\vinf=-0.249/7.6=-0.033$ km/s. \ok (informe: maniobra 0.033).\\
+Comparación con la gravedad en ese punto ($10.32\,R_J=7.378\times10^5$ km): $g=GM_J/r^2=1.26713\times10^8/(7.378\times10^5)^2=2.33\times10^{-4}$ km/s$^2=233$ mm/s$^2$; la maniobra es $2.83/233=1.2\,\%$ de la gravedad. Por eso solo se detecta cuando se resta el modelo gravitacional. \ok\\
+Rapidez de control: $\sqrt{57.9+2(1.26713\times10^8)/7.378\times10^5}=\sqrt{57.9+343.5}=20.04$ km/s, igual a los 20.03 de la tabla. \ok\\
+Inicio $129.9$ min tras el periapsis (<<130>>); duración $206.5-129.9=76.6$ min. \ok
+
+\textbf{V23. Reparto de la caída de $\vinf$.} $7.650-7.578=0.072$. Suma: $0.010+0.029+0.033=0.072$. \ok\\
+Modelo básico: $7.650-0.010=7.640$. \ok\\
+Satélites y J2 como fracción de $\vinf$: $0.029/7.6=0.38\,\%\approx0.4\,\%$ (el informe dice 0.4\,\%). \ok
+
+\section{Qué efecto debe tener Saturno (Cuadro 1)}
+\textbf{V24. Orden de magnitud.} Aceleración directa de Saturno sobre la sonda a la distancia mínima Júpiter--Saturno ($9.54-5.30=4.24$ UA $=6.34\times10^8$ km): $GM_S/d^2=3.7931\times10^7/(6.34\times10^8)^2=9.4\times10^{-11}$ km/s$^2$. Aceleración del Sol a 5.30 UA: $GM_\odot/r^2=2.11\times10^{-7}$. Razón: $4.5\times10^{-4}$. El informe da un cambio de $\Delta E$ de $1$--$4\times10^{-4}$ relativo: mismo orden (y el efecto real es algo menor porque la parte uniforme de esa aceleración también actúa sobre el Sol). \ok (solo como orden de magnitud)
+
+\section{Error de las cónicas (fig. 3): lo que sí se puede razonar}
+\textbf{V25. Tiempo de permanencia en la esfera.} $t=r_{SOI}/\vinf$: para $\vinf=2.5$ km/s, $4.820\times10^7/2.5=1.93\times10^7$ s $=223$ d, durante los que Júpiter avanza $n t=1.6785\times10^{-8}\times1.93\times10^7=0.32$ rad $=18.5^\circ$. Para $15$ km/s: $37$ d y $0.054$ rad $=3.1^\circ$. El encuentro <<instantáneo>> ignora ese movimiento, y ese movimiento es seis veces mayor a baja velocidad. Es coherente con que el error crezca al bajar $\vinf$, aunque con este argumento no sale el valor $17.5\,\%$ frente a $0.13\,\%$: esos números solo salen de la integración numérica. \ok\ (cualitativo)
+
+\textbf{V26. Predicción 1: giro de $138^\circ$.} $r_p=2\,R_J=1.43\times10^5$ km y $\vinf=8$: $r_p\vinf^2/GM_J=1.43\times10^5(64)/1.26713\times10^8=0.0722$; $e=1.0722$; $\sin(\delta/2)=0.9327$; $\delta/2=68.9^\circ$; $\delta=137.7^\circ\approx138^\circ$. \ok
+
+\textbf{V27. Predicción 2: ganar energía pasando por detrás.} $\Delta E=\vec v_J\cdot(\vec u_{sal}-\vec u_{ent})$. Si la sonda pasa por detrás de Júpiter, la atracción gira $\vec u$ hacia el sentido de $\vec v_J$, y la componente en esa dirección crece, entonces $\Delta E>0$. Con los números de V13, $+14.03$ km/s de componente da $+179.8$. Pasando por delante sería lo contrario. \ok
+
+\section{Lo que no se puede hacer a mano}
+Estas cifras salen de integraciones numéricas con miles de pasos. Para cada una se indica la comprobación independiente que ya existe.
+\begin{itemize}
+\item \textbf{Fig. 3 y Cuadro 1} (errores de 17.5, 5.7, 2.0, 1.0 y 0.13\,\%; 27 y 2.4\,\%; 70\,\%; sobreestimación; cambio de signo entre 6 y 7 km/s; 0.07, 0.4 y 3\,\%): comparación entre dos integraciones (IAS15 frente a DOP853) y control con la constante de Jacobi, que debe conservarse.
+\item \textbf{Conservación de $h$} (variación relativa $2.5\times10^{-14}$; $3.65\times10^{-12}$ en la prueba simbólica): sale del propio integrador y no tiene cálculo manual. El resultado simbólico de que $h=E-n\ell_z$ está en la hoja anterior, paso a paso.
+\item \textbf{Convergencia} (2.1 m, 3 m, 2 cm): mismo cálculo con otra tolerancia y otro método.
+\item \textbf{Errores en posición} (1300 y 310 km en el periapsis; 68\,000 km en 11 días; 6 km; 790 km): comparación punto a punto con el kernel SPICE; no se pueden repetir sin la integración.
+\item \textbf{Energía $-157\to-40$ km$^2$/s$^2$ en 500 días}: solo se puede decir a mano que $a=GM_\odot/(2|E|)$ pasa de $2.8$ a $11.1$ UA, y que sigue ligada; el valor de la ganancia viene de la simulación.
+\item \textbf{Cuadro 2, columna circular} (12.59 y 5.75 $R_J$): requiere la efeméride circular; el método de cálculo es el mismo de V14 y V15.
+\end{itemize}
+
+\section*{Resumen}
+De los 27 puntos, los V1--V23 y V26--V27 se rehicieron con una calculadora y coinciden con el informe dentro del redondeo (la mayor diferencia es 0.3\,\% en el parámetro de Tisserand posterior, V21). V24 y V25 son comprobaciones de orden de magnitud. No se encontró ninguna cifra del informe que contradiga estos cálculos.
+\end{document}
