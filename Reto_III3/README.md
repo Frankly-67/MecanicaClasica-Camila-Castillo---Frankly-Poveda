@@ -1,38 +1,31 @@
-# Reto III.3 — Asistencia gravitacional en Júpiter
+# Reto III.3 — Asistencia gravitacional
 
-Entrega del reto de Mecánica Clásica: diseño de una asistencia gravitacional en Júpiter
-para transferir una sonda hacia Saturno, comparando cónicas empalmadas e integración
-gravitacional de N cuerpos, con validación mediante la trayectoria de Voyager 2.
+Este trabajo estudia cómo una sonda puede aprovechar el encuentro cercano con Júpiter para modificar su trayectoria alrededor del Sol y continuar su viaje hacia Saturno.
 
-## Estructura
+Se comparan dos formas de describir la maniobra: el modelo de cónicas empalmadas y una integración gravitacional más completa. También se revisan las cantidades conservadas en los distintos sistemas de referencia y se contrastan los resultados con el caso de Voyager 2.
 
-| Carpeta | Contenido |
+## Contenido
+
+- **Informe:** desarrollo teórico, procedimiento, resultados y conclusiones.
+- **Código y datos:** programas, archivos de entrada, resultados numéricos, gráficas y pruebas utilizadas en el análisis.
+- **Bitácora:** registro del trabajo con herramientas de IA y de las comprobaciones realizadas durante el proyecto.
+- **Presentación:** diapositivas preparadas para explicar el problema y los resultados.
+- **Videos:** animaciones y visualizaciones que acompañan el análisis.
+- **Material de apoyo:** apuntes y documentos de consulta.
+
+## Archivos principales
+
+| Material | Ubicación |
 |---|---|
-| `01_Informe_Tecnico/` | Informe final en PDF, fuente LaTeX y paquete de Overleaf. |
-| `02_Codigo_y_Datos/` | Repositorio del proyecto descomprimido: código Python, pruebas, datos, resultados, figuras y documentación técnica. |
-| `03_Bitacora_IA/` | Bitácora de colaboración humano–IA y metodología 4D. |
-| `04_Presentacion/` | Diapositivas de sustentación. |
-| `05_Videos/` | Videos de apoyo y visualizaciones del proyecto. |
-| `06_Material_de_Apoyo/` | Apuntes y marco teórico complementario. |
+| Informe en PDF | [01_Informe_Tecnico](01_Informe_Tecnico/) |
+| Código y datos | [02_Codigo_y_Datos](02_Codigo_y_Datos/) |
+| Bitácora | [03_Bitacora_IA](03_Bitacora_IA/) |
+| Presentación | [04_Presentacion](04_Presentacion/) |
+| Videos | [05_Videos](05_Videos/) |
+| Material complementario | [06_Material_de_Apoyo](06_Material_de_Apoyo/) |
 
-## Código y reproducibilidad
+Para reproducir el análisis, consulta el README que se encuentra dentro de la carpeta del código. Allí están las indicaciones específicas de instalación y ejecución.
 
-El código está dentro de `02_Codigo_y_Datos/reto-III3-asistencia-gravitacional/`.
-Consultar allí su `README.md` para instalar dependencias, reproducir resultados y ejecutar
-las pruebas. El proyecto documenta sus fuentes de datos, hipótesis, resultados y scripts.
+## Integrantes
 
-## Orden recomendado de lectura
-
-1. `01_Informe_Tecnico/informe_reto_III3.pdf`
-2. `04_Presentacion/Presentacion_Reto_III3_Asistencia_Gravitacional.pptx`
-3. `03_Bitacora_IA/bitacora_ia.md`
-4. `02_Codigo_y_Datos/reto-III3-asistencia-gravitacional/README.md`
-
-## Nota de revisión
-
-La organización de carpetas se normalizó para que la entrega sea navegable en GitHub.
-Se mantuvieron los archivos técnicos originales y se expandió el repositorio de código
-para que sus fuentes puedan consultarse directamente desde GitHub.
-
-Antes de entregar, conviene resolver las observaciones registradas en `REVISION_PREVIA.md`,
-en especial las diferencias numéricas entre el informe y las diapositivas.
+Camila Castillo y Frankly Poveda.
