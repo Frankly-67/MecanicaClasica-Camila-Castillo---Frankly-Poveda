@@ -10,6 +10,7 @@ En este repositorio se reúnen los talleres, problemas y asignaciones que vamos 
 - **1.1.2. Semana 2:** [ProblemaViernes_2 - 21.08.pdf](DocPDF/ProblemaViernes_2%20-%2021.08.pdf)
 - **1.1.3. Semana 3:** [Semana 3.pdf](DocPDF/Semana%203.pdf)
 - **1.1.4. Semana 4:** [Semana 4.pdf](DocPDF/Semana%204.pdf)
+- **1.1.5. Semana 7:** [Semana 7.pdf](DocPDF/Semana%207.pdf)
 
 ## 2. ASIGNACIONES
 
